@@ -21,9 +21,9 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: mat_eyebrows alt4
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
   m_ValidKeywords:
-  - _GLOSSYREFLECTIONS_OFF
+  - _ENVIRONMENTREFLECTIONS_OFF
   - _NORMALMAP
   - _SPECULARHIGHLIGHTS_OFF
   m_InvalidKeywords: []
@@ -31,7 +31,8 @@ Material:
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
@@ -115,14 +116,14 @@ Material:
     - _GlossinessSource: 0
     - _GlossyReflections: 0
     - _Mask_Factor: 0.45
-    - _Metallic: 0.207
+    - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _Shininess: 0
-    - _Smoothness: 0.087
+    - _Smoothness: 0.473
     - _SmoothnessSource: 0
     - _SmoothnessTextureChannel: 0
     - _SpecSource: 0
@@ -135,8 +136,8 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.20754719, g: 0.19123058, b: 0.18307228, a: 0}
-    - _Color: {r: 0.33922213, g: 0.42176008, b: 0.5943396, a: 1}
+    - _BaseColor: {r: 0.28568888, g: 0.364918, b: 0.5660378, a: 0}
+    - _Color: {r: 0.28568885, g: 0.36491796, b: 0.5660378, a: 0}
     - _Color_A_1: {r: 1, g: 1, b: 1, a: 0}
     - _Color_A_2: {r: 1, g: 1, b: 1, a: 0}
     - _Color_B_1: {r: 1, g: 1, b: 1, a: 0}
