@@ -12,72 +12,72 @@ namespace ECM2
         public enum MovementMode
         {
             /// <summary>
-            /// Disables movement clearing velocity and any pending forces / impulsed on Character.
+            /// 이동을 비활성화하고 캐릭터의 속도 및 모든 대기 중인 힘/충격을 초기화합니다.
             /// </summary>
-            
+
             None,
-            
+
             /// <summary>
-            /// Walking on a surface, under the effects of friction, and able to "step up" barriers. Vertical velocity is zero.
+            /// 마찰의 영향을 받으며 표면 위를 걷고 "장애물을 넘을 수 있는" 상태입니다. 수직 속도는 0입니다.
             /// </summary>
-            
+
             Walking,
-            
+
             /// <summary>
-            /// Falling under the effects of gravity, after jumping or walking off the edge of a surface.
+            /// 점프 후 또는 표면 가장자리에서 떨어질 때 중력의 영향을 받으며 떨어지는 상태입니다.
             /// </summary>
-            
+
             Falling,
-            
+
             /// <summary>
-            /// Flying, ignoring the effects of gravity.
+            /// 중력의 영향을 무시하고 비행하는 상태입니다.
             /// </summary>
-            
+
             Flying,
-            
+
             /// <summary>
-            /// Swimming through a fluid volume, under the effects of gravity and buoyancy.
+            /// 중력과 부력의 영향을 받으며 유체 볼륨을 통해 수영하는 상태입니다.
             /// </summary>
-            
+
             Swimming,
-            
+
             /// <summary>
-            /// User-defined custom movement mode, including many possible sub-modes.
+            /// 사용자 정의 이동 모드로, 여러 하위 모드를 포함할 수 있습니다.
             /// </summary>
-            
+
             Custom
         }
 
         public enum RotationMode
         {
             /// <summary>
-            /// Disable Character's rotation.
+            /// 캐릭터의 회전을 비활성화합니다.
             /// </summary>
-            
+
             None,
-            
+
             /// <summary>
-            /// Smoothly rotate the Character toward the direction of acceleration, using rotationRate as the rate of rotation change.
+            /// rotationRate를 회전 변경 속도로 사용하여 가속 방향으로 캐릭터를 부드럽게 회전시킵니다.
             /// </summary>
-            
+
             OrientRotationToMovement,
-            
+
             /// <summary>
-            /// Smoothly rotate the Character toward camera's view direction, using rotationRate as the rate of rotation change.
+            /// rotationRate를 회전 변경 속도로 사용하여 카메라의 시야 방향으로 캐릭터를 부드럽게 회전시킵니다.
             /// </summary>
-            
+
             OrientRotationToViewDirection,
-            
+
             /// <summary>
-            /// Let root motion handle Character rotation.
+            /// 루트 모션이 캐릭터 회전을 처리하도록 합니다.
             /// </summary>
-            
+
             OrientWithRootMotion,
-            
+
             /// <summary>
-            /// User-defined custom rotation mode.
+            /// 사용자 정의 회전 모드입니다.
             /// </summary>
-            
+
             Custom
         }
 
@@ -86,199 +86,199 @@ namespace ECM2
         #region EDITOR EXPOSED FIELDS
 
         [Space(15f)]
-        [Tooltip("The Character's current rotation mode.")]
+        [Tooltip("캐릭터의 현재 회전 모드입니다.")]
         [SerializeField]
         private RotationMode _rotationMode;
 
-        [Tooltip("Change in rotation per second (Deg / s).\n" +
-                 "Used when rotation mode is OrientRotationToMovement or OrientRotationToViewDirection.")]
+        [Tooltip("초당 회전 변화량 (Deg / s).\n" +
+                 "회전 모드가 OrientRotationToMovement 또는 OrientRotationToViewDirection일 때 사용됩니다.")]
         [SerializeField]
         private float _rotationRate;
-        
+
         [Space(15f)]
-        [Tooltip("The Character's default movement mode. Used at player startup.")]
+        [Tooltip("캐릭터의 기본 이동 모드입니다. 플레이어 시작 시 사용됩니다.")]
         [SerializeField]
         private MovementMode _startingMovementMode;
-        
+
         [Space(15f)]
-        [Tooltip("The maximum ground speed when walking.\n" +
-                 "Also determines maximum lateral speed when falling.")]
+        [Tooltip("걷는 동안 최대 지면 속도입니다.\n" +
+                 "또한 떨어질 때 최대 측면 속도를 결정합니다.")]
         [SerializeField]
         private float _maxWalkSpeed;
 
-        [Tooltip("The ground speed that we should accelerate up to when walking at minimum analog stick tilt.")]
+        [Tooltip("아날로그 스틱 최소 기울기에서 걷기 위해 가속해야 하는 지면 속도입니다.")]
         [SerializeField]
         private float _minAnalogWalkSpeed;
 
-        [Tooltip("Max Acceleration (rate of change of velocity).")]
+        [Tooltip("최대 가속도 (속도의 변화율)입니다.")]
         [SerializeField]
         private float _maxAcceleration;
 
-        [Tooltip("Deceleration when walking and not applying acceleration.\n" +
-                 "This is a constant opposing force that directly lowers velocity by a constant value.")]
+        [Tooltip("걷는 동안 가속하지 않을 때의 감속도입니다.\n" +
+                 "이는 속도를 일정 값만큼 직접 줄이는 일정한 반대 힘입니다.")]
         [SerializeField]
         private float _brakingDecelerationWalking;
 
-        [Tooltip("Setting that affects movement control.\n" +
-                 "Higher values allow faster changes in direction.\n" +
-                 "If useSeparateBrakingFriction is false, also affects the ability to stop more quickly when braking (whenever acceleration is zero).")]
+        [Tooltip("이동 제어에 영향을 주는 설정입니다.\n" +
+                 "값이 높을수록 방향 변경이 빨라집니다.\n" +
+                 "useSeparateBrakingFriction이 false인 경우 가속이 0일 때 더 빨리 멈출 수 있는 능력에도 영향을 줍니다.")]
         [SerializeField]
         private float _groundFriction;
-        
+
         [Space(15.0f)]
-        [Tooltip("Is the character able to crouch ?")]
+        [Tooltip("캐릭터가 앉을 수 있습니까?")]
         [SerializeField]
         private bool _canEverCrouch;
 
-        [Tooltip("If canEverCrouch == true, determines the character height when crouched.")]
+        [Tooltip("canEverCrouch == true일 때, 앉았을 때 캐릭터 높이를 결정합니다.")]
         [SerializeField]
         private float _crouchedHeight;
-        
-        [Tooltip("If canEverCrouch == true, determines the character height when un crouched.")]
+
+        [Tooltip("canEverCrouch == true일 때, 서 있을 때 캐릭터 높이를 결정합니다.")]
         [SerializeField]
         private float _unCrouchedHeight;
 
-        [Tooltip("The maximum ground speed while crouched.")]
+        [Tooltip("앉아 있을 때 최대 지면 속도입니다.")]
         [SerializeField]
         private float _maxWalkSpeedCrouched;
-        
+
         [Space(15f)]
-        [Tooltip("The maximum vertical velocity a Character can reach when falling. Eg: Terminal velocity.")]
+        [Tooltip("캐릭터가 떨어질 때 최대 수직 속도입니다. 예: 터미널 속도.")]
         [SerializeField]
         private float _maxFallSpeed;
 
-        [Tooltip("Lateral deceleration when falling and not applying acceleration.")]
+        [Tooltip("떨어질 때 가속하지 않을 때의 측면 감속도입니다.")]
         [SerializeField]
         private float _brakingDecelerationFalling;
 
-        [Tooltip("Friction to apply to lateral movement when falling. \n" +
-                 "If useSeparateBrakingFriction is false, also affects the ability to stop more quickly when braking (whenever acceleration is zero).")]
+        [Tooltip("떨어질 때 측면 이동에 적용할 마찰력입니다.\n" +
+                 "useSeparateBrakingFriction이 false인 경우 가속이 0일 때 더 빨리 멈출 수 있는 능력에도 영향을 줍니다.")]
         [SerializeField]
         private float _fallingLateralFriction;
 
         [Range(0.0f, 1.0f)]
-        [Tooltip("When falling, amount of lateral movement control available to the Character.\n" +
-                 "0 = no control, 1 = full control at max acceleration.")]
+        [Tooltip("떨어질 때 캐릭터의 측면 이동 제어 양입니다.\n" +
+                 "0 = 제어 없음, 1 = 최대 가속에서 전체 제어.")]
         [SerializeField]
         private float _airControl;
-        
+
         [Space(15.0f)]
-        [Tooltip("Is the character able to jump ?")]
+        [Tooltip("캐릭터가 점프할 수 있습니까?")]
         [SerializeField]
         private bool _canEverJump;
 
-        [Tooltip("Can jump while crouching ?")]
+        [Tooltip("앉은 상태에서 점프할 수 있습니까?")]
         [SerializeField]
         private bool _canJumpWhileCrouching;
 
-        [Tooltip("The max number of jumps the Character can perform.")]
+        [Tooltip("캐릭터가 수행할 수 있는 최대 점프 횟수입니다.")]
         [SerializeField]
         private int _jumpMaxCount;
 
-        [Tooltip("Initial velocity (instantaneous vertical velocity) when jumping.")]
+        [Tooltip("점프 시 초기 속도 (즉각적인 수직 속도)입니다.")]
         [SerializeField]
         private float _jumpImpulse;
-        
-        [Tooltip("The maximum time (in seconds) to hold the jump. eg: Variable height jump.")]
+
+        [Tooltip("점프를 유지할 최대 시간 (초)입니다. 예: 가변 높이 점프.")]
         [SerializeField]
         private float _jumpMaxHoldTime;
-        
-        [Tooltip("How early before hitting the ground you can trigger a jump (in seconds).")]
+
+        [Tooltip("지면에 닿기 전에 점프를 트리거할 수 있는 최대 시간 (초)입니다.")]
         [SerializeField]
         private float _jumpMaxPreGroundedTime;
 
-        [Tooltip("How long after leaving the ground you can trigger a jump (in seconds).")]
+        [Tooltip("지면에서 떨어진 후 점프를 트리거할 수 있는 최대 시간 (초)입니다.")]
         [SerializeField]
         private float _jumpMaxPostGroundedTime;
-        
+
         [Space(15f)]
-        [Tooltip("The maximum flying speed.")]
+        [Tooltip("최대 비행 속도입니다.")]
         [SerializeField]
         private float _maxFlySpeed;
 
-        [Tooltip("Deceleration when flying and not applying acceleration.")]
+        [Tooltip("비행 중 가속하지 않을 때의 감속도입니다.")]
         [SerializeField]
         private float _brakingDecelerationFlying;
 
-        [Tooltip("Friction to apply to movement when flying.")]
+        [Tooltip("비행 중 이동에 적용할 마찰력입니다.")]
         [SerializeField]
         private float _flyingFriction;
-        
+
         [Space(15f)]
-        [Tooltip("The maximum swimming speed.")]
+        [Tooltip("최대 수영 속도입니다.")]
         [SerializeField]
         private float _maxSwimSpeed;
 
-        [Tooltip("Deceleration when swimming and not applying acceleration.")]
+        [Tooltip("수영 중 가속하지 않을 때의 감속도입니다.")]
         [SerializeField]
         private float _brakingDecelerationSwimming;
 
-        [Tooltip("Friction to apply to movement when swimming.")]
+        [Tooltip("수영 중 이동에 적용할 마찰력입니다.")]
         [SerializeField]
         private float _swimmingFriction;
 
-        [Tooltip("Water buoyancy ratio. 1 = Neutral Buoyancy, 0 = No Buoyancy.")]
+        [Tooltip("물의 부력 비율입니다. 1 = 중립 부력, 0 = 부력 없음.")]
         [SerializeField]
         private float _buoyancy;
-        
-        [Tooltip("This Character's gravity.")]
+
+        [Tooltip("이 캐릭터의 중력입니다.")]
         [Space(15f)]
         [SerializeField]
         private Vector3 _gravity;
 
-        [Tooltip("The degree to which this object is affected by gravity.\n" +
-                 "Can be negative allowing to change gravity direction.")]
+        [Tooltip("이 객체가 중력에 영향을 받는 정도입니다.\n" +
+                 "중력 방향을 변경할 수 있도록 음수로 설정할 수 있습니다.")]
         [SerializeField]
         private float _gravityScale;
-        
+
         [Space(15f)]
-        [Tooltip("Should animation determines the Character's movement ?")]
+        [Tooltip("애니메이션이 캐릭터의 이동을 결정해야 합니까?")]
         [SerializeField]
         private bool _useRootMotion;
 
         [Space(15f)]
-        [Tooltip("Whether the Character moves with the moving platform it is standing on.")]
+        [Tooltip("캐릭터가 서 있는 플랫폼이 움직일 때 캐릭터도 움직입니까?")]
         [SerializeField]
         private bool _impartPlatformMovement;
 
-        [Tooltip("Whether the Character receives the changes in rotation of the platform it is standing on.")]
+        [Tooltip("캐릭터가 서 있는 플랫폼의 회전 변화를 받습니까?")]
         [SerializeField]
         private bool _impartPlatformRotation;
 
-        [Tooltip("If true, impart the platform's velocity when jumping or falling off it.")]
+        [Tooltip("true인 경우 플랫폼에서 점프하거나 떨어질 때 플랫폼의 속도를 적용합니다.")]
         [SerializeField]
         private bool _impartPlatformVelocity;
 
         [Space(15f)]
-        [Tooltip("If enabled, the player will interact with dynamic rigidbodies when walking into them.")]
+        [Tooltip("활성화된 경우, 플레이어가 동적 리지드바디와 상호작용할 때 영향을 받습니다.")]
         [SerializeField]
         private bool _enablePhysicsInteraction;
 
-        [Tooltip("Should apply push force to characters when walking into them ?")]
+        [Tooltip("걷는 동안 캐릭터와 충돌할 때 밀기 힘을 적용해야 합니까?")]
         [SerializeField]
         private bool _applyPushForceToCharacters;
 
-        [Tooltip("Should apply a downward force to rigidbodies we stand on ?")]
+        [Tooltip("서 있는 동안 리지드바디에 아래로 향하는 힘을 적용해야 합니까?")]
         [SerializeField]
         private bool _applyStandingDownwardForce;
 
         [Space(15.0f)]
-        [Tooltip("This Character's mass (in Kg)." +
-                 "Determines how the character interact against other characters or dynamic rigidbodies if enablePhysicsInteraction == true.")]
+        [Tooltip("이 캐릭터의 질량 (kg 단위)입니다.\n" +
+                 "enablePhysicsInteraction == true인 경우 다른 캐릭터나 동적 리지드바디와 상호작용하는 방식을 결정합니다.")]
         [SerializeField]
         private float _mass;
 
-        [Tooltip("Force applied to rigidbodies when walking into them (due to mass and relative velocity) is scaled by this amount.")]
+        [Tooltip("걷는 동안 리지드바디에 적용되는 힘은 (질량과 상대 속도에 따라) 이 값으로 스케일됩니다.")]
         [SerializeField]
         private float _pushForceScale;
 
-        [Tooltip("Force applied to rigidbodies we stand on (due to mass and gravity) is scaled by this amount.")]
+        [Tooltip("서 있는 동안 리지드바디에 적용되는 힘 (질량과 중력에 따라) 이 값으로 스케일됩니다.")]
         [SerializeField]
         private float _standingDownwardForceScale;
 
         [Space(15f)]
-        [Tooltip("Reference to the Player's Camera.\n" +
-                 "If assigned, the Character's movement will be relative to this camera, otherwise movement will be relative to world axis.")]
+        [Tooltip("플레이어의 카메라에 대한 참조입니다.\n" +
+                 "지정된 경우 캐릭터의 이동은 이 카메라를 기준으로, 그렇지 않은 경우 이동은 세계 축을 기준으로 합니다.")]
         [SerializeField]
         private Camera _camera;
 
@@ -290,39 +290,39 @@ namespace ECM2
 
         private Coroutine _lateFixedUpdateCoroutine;
         private bool _enableAutoSimulation = true;
-        
+
         private Transform _transform;
         private CharacterMovement _characterMovement;
         private Animator _animator;
         private RootMotionController _rootMotionController;
         private Transform _cameraTransform;
-        
+
         /// <summary>
-        /// The Character's current movement mode.
+        /// 캐릭터의 현재 이동 모드입니다.
         /// </summary>
-        
+
         private MovementMode _movementMode = MovementMode.None;
 
         /// <summary>
-        /// Character's User-defined custom movement mode (sub-mode).
-        /// Only applicable if _movementMode == Custom.
+        /// 캐릭터의 사용자 정의 이동 모드 (하위 모드).
+        /// _movementMode == Custom인 경우에만 적용됩니다.
         /// </summary>
-        
+
         private int _customMovementMode;
-        
+
         private bool _useSeparateBrakingFriction;
         private float _brakingFriction;
-        
+
         private bool _useSeparateBrakingDeceleration;
         private float _brakingDeceleration;
-        
+
         private Vector3 _movementDirection = Vector3.zero;
         private Vector3 _rotationInput = Vector3.zero;
 
         private Vector3 _desiredVelocity = Vector3.zero;
-        
+
         protected bool _isCrouched;
-        
+
         protected bool _isJumping;
         private float _jumpInputHoldTime;
         private float _jumpForceTimeRemaining;
@@ -335,8 +335,8 @@ namespace ECM2
         #region PROPERTIES
 
         /// <summary>
-        /// This Character's camera transform.
-        /// If assigned, the Character's movement will be relative to this, otherwise movement will be relative to world.
+        /// 이 캐릭터의 카메라 변환입니다.
+        /// 지정된 경우 캐릭터의 이동은 이 카메라를 기준으로, 그렇지 않은 경우 이동은 세계 축을 기준으로 합니다.
         /// </summary>
 
         public new Camera camera
@@ -346,7 +346,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Cached camera transform (if any).
+        /// 캐시된 카메라 변환 (있는 경우).
         /// </summary>
 
         public Transform cameraTransform
@@ -359,43 +359,43 @@ namespace ECM2
                 return _cameraTransform;
             }
         }
-        
+
         /// <summary>
-        /// Cached Character transform.
+        /// 캐시된 캐릭터 변환입니다.
         /// </summary>
 
         public new Transform transform => _transform;
-        
+
         /// <summary>
-        /// Cached CharacterMovement component.
+        /// 캐시된 CharacterMovement 구성 요소입니다.
         /// </summary>
-        
+
         public CharacterMovement characterMovement => _characterMovement;
-        
+
         /// <summary>
-        /// Cached Animator component. Can be null.
+        /// 캐시된 Animator 구성 요소입니다. null일 수 있습니다.
         /// </summary>
 
         public Animator animator => _animator;
 
         /// <summary>
-        /// Cached Character's RootMotionController component. Can be null.
+        /// 캐시된 캐릭터의 RootMotionController 구성 요소입니다. null일 수 있습니다.
         /// </summary>
 
         public RootMotionController rootMotionController => _rootMotionController;
-        
+
         /// <summary>
-        /// Change in rotation per second, used when orientRotationToMovement or orientRotationToViewDirection are true.
+        /// 회전 모드가 OrientRotationToMovement 또는 OrientRotationToViewDirection일 때 사용하는 초당 회전 변화량입니다.
         /// </summary>
-        
+
         public float rotationRate
         {
             get => _rotationRate;
             set => _rotationRate = value;
         }
-        
+
         /// <summary>
-        /// The Character's current rotation mode.
+        /// 캐릭터의 현재 회전 모드입니다.
         /// </summary>
 
         public RotationMode rotationMode
@@ -403,9 +403,9 @@ namespace ECM2
             get => _rotationMode;
             set => _rotationMode = value;
         }
-        
+
         /// <summary>
-        /// The maximum ground speed when walking. Also determines maximum lateral speed when falling.
+        /// 걷는 동안 최대 지면 속도입니다. 또한 떨어질 때 최대 측면 속도를 결정합니다.
         /// </summary>
 
         public float maxWalkSpeed
@@ -415,7 +415,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// The ground speed that we should accelerate up to when walking at minimum analog stick tilt.
+        /// 아날로그 스틱 최소 기울기에서 걷기 위해 가속해야 하는 지면 속도입니다.
         /// </summary>
 
         public float minAnalogWalkSpeed
@@ -425,7 +425,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Max Acceleration (rate of change of velocity).
+        /// 최대 가속도 (속도의 변화율)입니다.
         /// </summary>
 
         public float maxAcceleration
@@ -435,8 +435,8 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Deceleration when walking and not applying acceleration.
-        /// This is a constant opposing force that directly lowers velocity by a constant value.
+        /// 걷는 동안 가속하지 않을 때의 감속도입니다.
+        /// 이는 속도를 일정 값만큼 직접 줄이는 일정한 반대 힘입니다.
         /// </summary>
 
         public float brakingDecelerationWalking
@@ -446,9 +446,9 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Setting that affects movement control.
-        /// Higher values allow faster changes in direction.
-        /// If useSeparateBrakingFriction is false, also affects the ability to stop more quickly when braking (whenever acceleration is zero).
+        /// 이동 제어에 영향을 주는 설정입니다.
+        /// 값이 높을수록 방향 변경이 빨라집니다.
+        /// useSeparateBrakingFriction이 false인 경우 가속이 0일 때 더 빨리 멈출 수 있는 능력에도 영향을 줍니다.
         /// </summary>
 
         public float groundFriction
@@ -456,19 +456,19 @@ namespace ECM2
             get => _groundFriction;
             set => _groundFriction = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// Is the character able to crouch ?
+        /// 캐릭터가 앉을 수 있습니까?
         /// </summary>
-        
+
         public bool canEverCrouch
         {
             get => _canEverCrouch;
             set => _canEverCrouch = value;
         }
-        
+
         /// <summary>
-        /// If canEverCrouch == true, determines the character height when crouched.
+        /// canEverCrouch == true일 때, 앉았을 때 캐릭터 높이를 결정합니다.
         /// </summary>
 
         public float crouchedHeight
@@ -476,9 +476,9 @@ namespace ECM2
             get => _crouchedHeight;
             set => _crouchedHeight = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// If canEverCrouch == true, determines the character height when un crouched.
+        /// canEverCrouch == true일 때, 서 있을 때 캐릭터 높이를 결정합니다.
         /// </summary>
 
         public float unCrouchedHeight
@@ -486,26 +486,26 @@ namespace ECM2
             get => _unCrouchedHeight;
             set => _unCrouchedHeight = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// The maximum ground speed while crouched.
+        /// 앉아 있을 때 최대 지면 속도입니다.
         /// </summary>
-        
+
         public float maxWalkSpeedCrouched
         {
             get => _maxWalkSpeedCrouched;
             set => _maxWalkSpeedCrouched = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// Is the crouch input pressed?
+        /// 앉기 입력이 눌렸습니까?
         /// </summary>
 
         public bool crouchInputPressed { get; protected set; }
-        
+
         /// <summary>
-        /// The maximum vertical velocity (in m/s) a Character can reach when falling.
-        /// Eg: Terminal velocity.
+        /// 떨어질 때 최대 수직 속도 (m/s)입니다.
+        /// 예: 터미널 속도.
         /// </summary>
 
         public float maxFallSpeed
@@ -515,7 +515,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Lateral deceleration when falling and not applying acceleration.
+        /// 떨어질 때 가속하지 않을 때의 측면 감속도입니다.
         /// </summary>
 
         public float brakingDecelerationFalling
@@ -525,7 +525,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Friction to apply to lateral air movement when falling.
+        /// 떨어질 때 측면 공기 이동에 적용할 마찰력입니다.
         /// </summary>
 
         public float fallingLateralFriction
@@ -533,16 +533,16 @@ namespace ECM2
             get => _fallingLateralFriction;
             set => _fallingLateralFriction = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// The Character's time in falling movement mode.
+        /// 캐릭터의 낙하 시간입니다.
         /// </summary>
 
         public float fallingTime => _fallingTime;
-        
+
         /// <summary>
-        /// When falling, amount of lateral movement control available to the Character.
-        /// 0 = no control, 1 = full control at max acceleration.
+        /// 떨어질 때 캐릭터의 측면 이동 제어 양입니다.
+        /// 0 = 제어 없음, 1 = 최대 가속에서 전체 제어.
         /// </summary>
 
         public float airControl
@@ -550,19 +550,19 @@ namespace ECM2
             get => _airControl;
             set => _airControl = Mathf.Clamp01(value);
         }
-        
+
         /// <summary>
-        /// Is the character able to jump ?
+        /// 캐릭터가 점프할 수 있습니까?
         /// </summary>
-        
+
         public bool canEverJump
         {
             get => _canEverJump;
             set => _canEverJump = value;
         }
-        
+
         /// <summary>
-        /// Is allowed to jump while crouching?
+        /// 앉은 상태에서 점프할 수 있습니까?
         /// </summary>
 
         public bool canJumpWhileCrouching
@@ -570,9 +570,9 @@ namespace ECM2
             get => _canJumpWhileCrouching;
             set => _canJumpWhileCrouching = value;
         }
-        
+
         /// <summary>
-        /// The max number of jumps the Character can perform.
+        /// 캐릭터가 수행할 수 있는 최대 점프 횟수입니다.
         /// </summary>
 
         public int jumpMaxCount
@@ -580,9 +580,9 @@ namespace ECM2
             get => _jumpMaxCount;
             set => _jumpMaxCount = Mathf.Max(1, value);
         }
-        
+
         /// <summary>
-        /// Initial velocity (instantaneous vertical velocity) when jumping.
+        /// 점프 시 초기 속도 (즉각적인 수직 속도)입니다.
         /// </summary>
 
         public float jumpImpulse
@@ -590,9 +590,9 @@ namespace ECM2
             get => _jumpImpulse;
             set => _jumpImpulse = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// The maximum time (in seconds) to hold the jump. eg: Variable height jump.
+        /// 점프를 유지할 최대 시간 (초)입니다. 예: 가변 높이 점프.
         /// </summary>
 
         public float jumpMaxHoldTime
@@ -600,9 +600,9 @@ namespace ECM2
             get => _jumpMaxHoldTime;
             set => _jumpMaxHoldTime = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// How early before hitting the ground you can trigger a jump (in seconds).
+        /// 지면에 닿기 전에 점프를 트리거할 수 있는 최대 시간 (초)입니다.
         /// </summary>
 
         public float jumpMaxPreGroundedTime
@@ -612,7 +612,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// How long after leaving the ground you can trigger a jump (in seconds).
+        /// 지면에서 떨어진 후 점프를 트리거할 수 있는 최대 시간 (초)입니다.
         /// </summary>
 
         public float jumpMaxPostGroundedTime
@@ -620,9 +620,9 @@ namespace ECM2
             get => _jumpMaxPostGroundedTime;
             set => _jumpMaxPostGroundedTime = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// This is the time (in seconds) that the player has held the jump input.
+        /// 플레이어가 점프 입력을 누른 시간 (초)입니다.
         /// </summary>
 
         public float jumpInputHoldTime
@@ -630,9 +630,9 @@ namespace ECM2
             get => _jumpInputHoldTime;
             protected set => _jumpInputHoldTime = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// Amount of jump force time remaining, if jumpMaxHoldTime > 0.
+        /// jumpMaxHoldTime > 0인 경우 점프 힘이 남아 있는 시간입니다.
         /// </summary>
 
         public float jumpForceTimeRemaining
@@ -640,9 +640,9 @@ namespace ECM2
             get => _jumpForceTimeRemaining;
             protected set => _jumpForceTimeRemaining = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// Tracks the current number of jumps performed.
+        /// 수행된 점프 횟수를 추적합니다.
         /// </summary>
 
         public int jumpCurrentCount
@@ -650,22 +650,22 @@ namespace ECM2
             get => _jumpCurrentCount;
             protected set => _jumpCurrentCount = Mathf.Max(0, value);
         }
-        
+
         /// <summary>
-        /// Should notify a jump apex ?
-        /// Set to true to receive OnReachedJumpApex event.
+        /// 점프 최고점을 알릴지 여부입니다.
+        /// OnReachedJumpApex 이벤트를 수신하려면 true로 설정합니다.
         /// </summary>
 
         public bool notifyJumpApex { get; set; }
-        
+
         /// <summary>
-        /// Is the jump input pressed?
+        /// 점프 입력이 눌렸습니까?
         /// </summary>
 
         public bool jumpInputPressed { get; protected set; }
-        
+
         /// <summary>
-        /// The maximum flying speed.
+        /// 최대 비행 속도입니다.
         /// </summary>
 
         public float maxFlySpeed
@@ -675,7 +675,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Deceleration when flying and not applying acceleration.
+        /// 비행 중 가속하지 않을 때의 감속도입니다.
         /// </summary>
 
         public float brakingDecelerationFlying
@@ -685,7 +685,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Friction to apply to movement when flying.
+        /// 비행 중 이동에 적용할 마찰력입니다.
         /// </summary>
 
         public float flyingFriction
@@ -695,7 +695,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// The maximum swimming speed.
+        /// 최대 수영 속도입니다.
         /// </summary>
 
         public float maxSwimSpeed
@@ -705,7 +705,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Deceleration when swimming and not applying acceleration.
+        /// 수영 중 가속하지 않을 때의 감속도입니다.
         /// </summary>
 
         public float brakingDecelerationSwimming
@@ -715,7 +715,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Friction to apply to movement when swimming.
+        /// 수영 중 이동에 적용할 마찰력입니다.
         /// </summary>
 
         public float swimmingFriction
@@ -725,7 +725,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Water buoyancy ratio. 1 = Neutral Buoyancy, 0 = No Buoyancy.
+        /// 물의 부력 비율입니다. 1 = 중립 부력, 0 = 부력 없음.
         /// </summary>
 
         public float buoyancy
@@ -733,9 +733,9 @@ namespace ECM2
             get => _buoyancy;
             set => _buoyancy = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// Should use a separate braking friction ?
+        /// 별도의 브레이크 마찰을 사용할지 여부입니다.
         /// </summary>
 
         public bool useSeparateBrakingFriction
@@ -745,8 +745,8 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Friction (drag) coefficient applied when braking (whenever Acceleration = 0, or if Character is exceeding max speed).
-        /// This is the value, used in all movement modes IF useSeparateBrakingFriction is true.
+        /// 브레이크 시 적용되는 마찰 (드래그) 계수입니다 (가속 = 0이거나 캐릭터가 최대 속도를 초과하는 경우).
+        /// useSeparateBrakingFriction이 true인 경우 모든 이동 모드에서 사용되는 값입니다.
         /// </summary>
 
         public float brakingFriction
@@ -754,9 +754,9 @@ namespace ECM2
             get => _brakingFriction;
             set => _brakingFriction = Mathf.Max(0.0f, value);
         }
-        
+
         /// <summary>
-        /// Should use a separate braking deceleration ?
+        /// 별도의 브레이크 감속을 사용할지 여부입니다.
         /// </summary>
 
         public bool useSeparateBrakingDeceleration
@@ -764,11 +764,11 @@ namespace ECM2
             get => _useSeparateBrakingDeceleration;
             set => _useSeparateBrakingDeceleration = value;
         }
-        
+
         /// <summary>
-        /// Deceleration when not applying acceleration.
-        /// This is a constant opposing force that directly lowers velocity by a constant value.
-        /// This is the value, used in all movement modes IF useSeparateBrakingDeceleration is true.
+        /// 가속하지 않을 때의 감속도입니다.
+        /// 이는 속도를 일정 값만큼 직접 줄이는 일정한 반대 힘입니다.
+        /// useSeparateBrakingDeceleration이 true인 경우 모든 이동 모드에서 사용되는 값입니다.
         /// </summary>
 
         public float brakingDeceleration
@@ -776,9 +776,9 @@ namespace ECM2
             get => _brakingDeceleration;
             set => _brakingDeceleration = value;
         }
-        
+
         /// <summary>
-        /// The Character's gravity (modified by gravityScale). Defaults to Physics.gravity.
+        /// 캐릭터의 중력 (gravityScale로 수정됨). 기본값은 Physics.gravity입니다.
         /// </summary>
 
         public Vector3 gravity
@@ -788,8 +788,8 @@ namespace ECM2
         }
 
         /// <summary>
-        /// The degree to which this object is affected by gravity.
-        /// Can be negative allowing to change gravity direction.
+        /// 이 객체가 중력에 영향을 받는 정도입니다.
+        /// 중력 방향을 변경할 수 있도록 음수로 설정할 수 있습니다.
         /// </summary>
 
         public float gravityScale
@@ -797,9 +797,9 @@ namespace ECM2
             get => _gravityScale;
             set => _gravityScale = value;
         }
-        
+
         /// <summary>
-        /// Should animation determines the Character' movement ?
+        /// 애니메이션이 캐릭터의 이동을 결정해야 합니까?
         /// </summary>
 
         public bool useRootMotion
@@ -807,9 +807,9 @@ namespace ECM2
             get => _useRootMotion;
             set => _useRootMotion = value;
         }
-        
+
         /// <summary>
-        /// If enabled, the player will interact with dynamic rigidbodies when walking into them.
+        /// 활성화된 경우, 플레이어가 동적 리지드바디와 상호작용할 때 영향을 받습니다.
         /// </summary>
 
         public bool enablePhysicsInteraction
@@ -825,7 +825,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Should apply push force to other characters when walking into them ?
+        /// 걷는 동안 다른 캐릭터와 충돌할 때 밀기 힘을 적용해야 합니까?
         /// </summary>
 
         public bool applyPushForceToCharacters
@@ -841,7 +841,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Should apply a downward force to rigidbodies we stand on ?
+        /// 서 있는 동안 리지드바디에 아래로 향하는 힘을 적용해야 합니까?
         /// </summary>
 
         public bool applyStandingDownwardForce
@@ -851,7 +851,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// This Character's mass (in Kg).
+        /// 이 캐릭터의 질량 (kg 단위)입니다.
         /// </summary>
 
         public float mass
@@ -867,7 +867,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Force applied to rigidbodies when walking into them (due to mass and relative velocity) is scaled by this amount.
+        /// 걷는 동안 리지드바디에 적용되는 힘은 (질량과 상대 속도에 따라) 이 값으로 스케일됩니다.
         /// </summary>
 
         public float pushForceScale
@@ -883,7 +883,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Force applied to rigidbodies we stand on (due to mass and gravity) is scaled by this amount.
+        /// 서 있는 동안 리지드바디에 적용되는 힘 (질량과 중력에 따라) 이 값으로 스케일됩니다.
         /// </summary>
 
         public float standingDownwardForceScale
@@ -893,7 +893,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// If true, impart the platform's velocity when jumping or falling off it.
+        /// true인 경우 플랫폼에서 점프하거나 떨어질 때 플랫폼의 속도를 적용합니다.
         /// </summary>
 
         public bool impartPlatformVelocity
@@ -909,8 +909,8 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Whether the Character moves with the moving platform it is standing on.
-        /// If true, the Character moves with the moving platform.
+        /// 캐릭터가 서 있는 플랫폼이 움직일 때 캐릭터도 움직입니까?
+        /// true인 경우 캐릭터도 플랫폼과 함께 움직입니다.
         /// </summary>
 
         public bool impartPlatformMovement
@@ -926,8 +926,8 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Whether the Character receives the changes in rotation of the platform it is standing on.
-        /// If true, the Character rotates with the moving platform.
+        /// 캐릭터가 서 있는 플랫폼의 회전 변화를 받습니까?
+        /// true인 경우 캐릭터도 플랫폼과 함께 회전합니다.
         /// </summary>
 
         public bool impartPlatformRotation
@@ -941,73 +941,73 @@ namespace ECM2
                     _characterMovement.impartPlatformRotation = _impartPlatformRotation;
             }
         }
-        
+
         /// <summary>
-        /// The character's current position (read only)
-        /// Use SetPosition method to modify it. 
+        /// 캐릭터의 현재 위치 (읽기 전용)
+        /// SetPosition 메서드를 사용하여 수정합니다. 
         /// </summary>
-        
+
         public Vector3 position => characterMovement.position;
-        
+
         /// <summary>
-        /// The character's current position (read only).
-        /// Use SetRotation method to modify it. 
+        /// 캐릭터의 현재 위치 (읽기 전용).
+        /// SetRotation 메서드를 사용하여 수정합니다. 
         /// </summary>
 
         public Quaternion rotation => characterMovement.rotation;
-        
+
         /// <summary>
-        /// The character's current velocity (read only).
-        /// Use SetVelocity method to modify it. 
+        /// 캐릭터의 현재 속도 (읽기 전용).
+        /// SetVelocity 메서드를 사용하여 수정합니다. 
         /// </summary>
 
         public Vector3 velocity => characterMovement.velocity;
 
         /// <summary>
-        /// The Character's current speed.
+        /// 캐릭터의 현재 속도입니다.
         /// </summary>
 
         public float speed => characterMovement.velocity.magnitude;
-        
+
         /// <summary>
-        /// The character's current radius (read only).
-        /// Use CharacterMovement SetDimensions method to modify it. 
+        /// 캐릭터의 현재 반지름 (읽기 전용).
+        /// CharacterMovement SetDimensions 메서드를 사용하여 수정합니다. 
         /// </summary>
 
         public float radius => characterMovement.radius;
-        
+
         /// <summary>
-        /// The character's current height (read only).
-        /// Use CharacterMovement SetDimensions method to modify it. 
+        /// 캐릭터의 현재 높이 (읽기 전용).
+        /// CharacterMovement SetDimensions 메서드를 사용하여 수정합니다. 
         /// </summary>
 
         public float height => characterMovement.height;
 
         /// <summary>
-        /// The Character's current movement mode (read only.
-        /// Use SetMovementMode method to modify it.
+        /// 캐릭터의 현재 이동 모드 (읽기 전용).
+        /// SetMovementMode 메서드를 사용하여 수정합니다.
         /// </summary>
-        
+
         public MovementMode movementMode => _movementMode;
 
         /// <summary>
-        /// Character's User-defined custom movement mode (sub-mode).
-        /// Only applicable if _movementMode == Custom (read only).
-        /// Use SetMovementMode method to modify it.
+        /// 캐릭터의 사용자 정의 이동 모드 (하위 모드).
+        /// _movementMode == Custom인 경우에만 적용됩니다 (읽기 전용).
+        /// SetMovementMode 메서드를 사용하여 수정합니다.
         /// </summary>
-        
+
         public int customMovementMode => _customMovementMode;
-        
+
         /// <summary>
-        /// PhysicsVolume overlapping this component. NULL if none.
+        /// 이 구성 요소와 겹치는 PhysicsVolume. 없음인 경우 NULL입니다.
         /// </summary>
 
         public PhysicsVolume physicsVolume { get; protected set; }
-        
+
         /// <summary>
-        /// If true, enables a LateFixedUpdate Coroutine to simulate this character.
-        /// If false, Simulate method must be called in order to simulate this character.
-        /// Enabled by default.
+        /// true인 경우 LateFixedUpdate 코루틴을 활성화하여 이 캐릭터를 시뮬레이션합니다.
+        /// false인 경우 이 캐릭터를 시뮬레이션하려면 Simulate 메서드를 호출해야 합니다.
+        /// 기본적으로 활성화되어 있습니다.
         /// </summary>
 
         public bool enableAutoSimulation
@@ -1019,176 +1019,176 @@ namespace ECM2
                 EnableAutoSimulationCoroutine(_enableAutoSimulation);
             }
         }
-        
-        // Is the Character paused?
+
+        // 캐릭터가 일시 정지 상태입니까?
 
         public bool isPaused { get; private set; }
 
         #endregion
-        
+
         #region EVENTS
-        
+
         public delegate void PhysicsVolumeChangedEventHandler(PhysicsVolume newPhysicsVolume);
 
         public delegate void MovementModeChangedEventHandler(MovementMode prevMovementMode, int prevCustomMode);
         public delegate void CustomMovementModeUpdateEventHandler(float deltaTime);
 
         public delegate void CustomRotationModeUpdateEventHandler(float deltaTime);
-        
+
         public delegate void BeforeSimulationUpdateEventHandler(float deltaTime);
         public delegate void AfterSimulationUpdateEventHandler(float deltaTime);
         public delegate void CharacterMovementUpdateEventHandler(float deltaTime);
-        
+
         public delegate void CollidedEventHandler(ref CollisionResult collisionResult);
         public delegate void FoundGroundEventHandler(ref FindGroundResult foundGround);
         public delegate void LandedEventHandled(Vector3 landingVelocity);
-        
+
         public delegate void CrouchedEventHandler();
         public delegate void UnCrouchedEventHandler();
-        
+
         public delegate void JumpedEventHandler();
         public delegate void ReachedJumpApexEventHandler();
-        
+
         /// <summary>
-        /// Event triggered when a character enter or leaves a PhysicsVolume.
+        /// 캐릭터가 PhysicsVolume에 들어가거나 떠날 때 트리거되는 이벤트입니다.
         /// </summary>
 
         public event PhysicsVolumeChangedEventHandler PhysicsVolumeChanged;
-        
+
         /// <summary>
-        /// Event triggered when a MovementMode change.
+        /// MovementMode 변경 시 트리거되는 이벤트입니다.
         /// </summary>
 
         public event MovementModeChangedEventHandler MovementModeChanged;
-        
+
         /// <summary>
-        /// Event for implementing custom character movement mode.
-        /// Called if MovementMode is set to Custom.
+        /// 사용자 정의 캐릭터 이동 모드를 구현하기 위한 이벤트입니다.
+        /// MovementMode가 Custom으로 설정된 경우 호출됩니다.
         /// </summary>
 
         public event CustomMovementModeUpdateEventHandler CustomMovementModeUpdated;
-        
+
         /// <summary>
-        /// Event for implementing custom character rotation mode.
-        /// Called when RotationMode is set to Custom.
+        /// 사용자 정의 캐릭터 회전 모드를 구현하기 위한 이벤트입니다.
+        /// RotationMode가 Custom으로 설정된 경우 호출됩니다.
         /// </summary>
 
         public event CustomRotationModeUpdateEventHandler CustomRotationModeUpdated;
-        
+
         /// <summary>
-        /// Event called before character simulation updates.
-        /// This 'hook' lets you externally update the character 'state'.
+        /// 캐릭터 시뮬레이션 업데이트 전에 호출되는 이벤트입니다.
+        /// 이 '후크'를 사용하여 외부에서 캐릭터 '상태'를 업데이트할 수 있습니다.
         /// </summary>
 
         public event BeforeSimulationUpdateEventHandler BeforeSimulationUpdated;
-        
+
         /// <summary>
-        /// Event called after character simulation updates.
-        /// This 'hook' lets you externally update the character 'state'.
+        /// 캐릭터 시뮬레이션 업데이트 후 호출되는 이벤트입니다.
+        /// 이 '후크'를 사용하여 외부에서 캐릭터 '상태'를 업데이트할 수 있습니다.
         /// </summary>
-        
+
         public event AfterSimulationUpdateEventHandler AfterSimulationUpdated;
-        
+
         /// <summary>
-        /// Event called when CharacterMovement component is updated (ie. Move call).
-        /// At this point the character movement has completed and its state is current. 
-        /// This 'hook' lets you externally update the character 'state'.
+        /// CharacterMovement 구성 요소가 업데이트될 때 (예: Move 호출) 호출되는 이벤트입니다.
+        /// 이 시점에서 캐릭터 이동이 완료되고 상태가 최신입니다. 
+        /// 이 '후크'를 사용하여 외부에서 캐릭터 '상태'를 업데이트할 수 있습니다.
         /// </summary>
 
         public event CharacterMovementUpdateEventHandler CharacterMovementUpdated;
-        
+
         /// <summary>
-        /// Event triggered when characters collides with other during a Move.
-        /// Can be called multiple times.
+        /// 캐릭터가 Move 중 다른 캐릭터와 충돌할 때 트리거되는 이벤트입니다.
+        /// 여러 번 호출될 수 있습니다.
         /// </summary>
 
         public event CollidedEventHandler Collided;
 
         /// <summary>
-        /// Event triggered when a character finds ground (walkable or non-walkable) as a result of a downcast sweep (eg: FindGround method).
+        /// 캐릭터가 다운캐스트 스윕 결과로 지면 (걸을 수 있는 지면 또는 걸을 수 없는 지면)을 찾을 때 트리거되는 이벤트입니다 (예: FindGround 메서드).
         /// </summary>
 
         public event FoundGroundEventHandler FoundGround;
-        
+
         /// <summary>
-        /// Event triggered when a character is falling and finds walkable ground as a result of a downcast sweep (eg: FindGround method).
+        /// 캐릭터가 떨어지면서 걸을 수 있는 지면을 찾을 때 트리거되는 이벤트입니다 (예: FindGround 메서드).
         /// </summary>
 
         public event LandedEventHandled Landed;
-        
+
         /// <summary>
-        /// Event triggered when Character enters crouching state.
+        /// 캐릭터가 웅크리기 상태에 들어갈 때 트리거되는 이벤트입니다.
         /// </summary>
 
         public event CrouchedEventHandler Crouched;
 
         /// <summary>
-        /// Event triggered when character exits crouching state.
+        /// 캐릭터가 웅크리기 상태에서 벗어날 때 트리거되는 이벤트입니다.
         /// </summary>
 
         public event UnCrouchedEventHandler UnCrouched;
-        
+
         /// <summary>
-        /// Event triggered when character jumps.
+        /// 캐릭터가 점프를 성공적으로 트리거했을 때 호출됩니다.
         /// </summary>
 
         public event JumpedEventHandler Jumped;
 
         /// <summary>
-        /// Triggered when Character reaches jump apex (eg: change in vertical speed from positive to negative).
-        /// Only triggered if notifyJumpApex == true.
+        /// 캐릭터가 점프 최고점에 도달했을 때 (예: 수직 속도가 양수에서 음수로 변할 때) 호출됩니다.
+        /// notifyJumpApex == true인 경우에만 트리거됩니다.
         /// </summary>
 
         public event ReachedJumpApexEventHandler ReachedJumpApex;
-        
+
         /// <summary>
-        /// Event for implementing custom character movement mode.
-        /// Called if MovementMode is set to Custom.
-        /// Derived Character classes should override CustomMovementMode method instead. 
+        /// 사용자 정의 캐릭터 이동 모드를 구현하기 위한 이벤트입니다.
+        /// MovementMode가 Custom으로 설정된 경우 호출됩니다.
+        /// 파생된 캐릭터 클래스는 CustomMovementMode 메서드를 재정의해야 합니다. 
         /// </summary>
-        
+
         protected virtual void OnCustomMovementMode(float deltaTime)
         {
-            // Trigger event
-            
+            // 이벤트 트리거
+
             CustomMovementModeUpdated?.Invoke(deltaTime);
         }
-        
+
         /// <summary>
-        /// Event for implementing custom character rotation mode.
-        /// Called if RotationMode is set to Custom.
-        /// Derived Character classes should override CustomRotationMode method instead. 
+        /// 사용자 정의 캐릭터 회전 모드를 구현하기 위한 이벤트입니다.
+        /// RotationMode가 Custom으로 설정된 경우 호출됩니다.
+        /// 파생된 캐릭터 클래스는 CustomRotationMode 메서드를 재정의해야 합니다. 
         /// </summary>
-        
+
         protected virtual void OnCustomRotationMode(float deltaTime)
         {
             CustomRotationModeUpdated?.Invoke(deltaTime);
         }
-        
+
         /// <summary>
-        /// Called at the beginning of the Character Simulation, before current movement mode update.
-        /// This 'hook' lets you externally update the character 'state'.
+        /// 캐릭터 시뮬레이션 업데이트 시작 시 호출됩니다. 현재 이동 모드 업데이트 전입니다.
+        /// 이 '후크'를 사용하여 외부에서 캐릭터 '상태'를 업데이트할 수 있습니다.
         /// </summary>
-        
+
         protected virtual void OnBeforeSimulationUpdate(float deltaTime)
         {
             BeforeSimulationUpdated?.Invoke(deltaTime);
         }
-        
+
         /// <summary>
-        /// Called after current movement mode update.
-        /// This 'hook' lets you externally update the character 'state'. 
+        /// 현재 이동 모드 업데이트 후 호출됩니다.
+        /// 이 '후크'를 사용하여 외부에서 캐릭터 '상태'를 업데이트할 수 있습니다. 
         /// </summary>
 
         protected virtual void OnAfterSimulationUpdate(float deltaTime)
         {
             AfterSimulationUpdated?.Invoke(deltaTime);
         }
-        
+
         /// <summary>
-        /// Event called when CharacterMovement component is updated (ie. Move call).
-        /// At this point the character movement has been applied and its state is current. 
-        /// This 'hook' lets you externally update the character 'state'.
+        /// CharacterMovement 구성 요소가 업데이트될 때 (예: Move 호출) 호출되는 이벤트입니다.
+        /// 이 시점에서 캐릭터 이동이 완료되고 상태가 최신입니다. 
+        /// 이 '후크'를 사용하여 외부에서 캐릭터 '상태'를 업데이트할 수 있습니다.
         /// </summary>
 
         protected virtual void OnCharacterMovementUpdated(float deltaTime)
@@ -1197,8 +1197,8 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Event triggered when characters collides with other during a CharacterMovement Move call.
-        /// Can be called multiple times.
+        /// 캐릭터가 Move 중 다른 캐릭터와 충돌할 때 트리거되는 이벤트입니다.
+        /// 여러 번 호출될 수 있습니다.
         /// </summary>
 
         protected virtual void OnCollided(ref CollisionResult collisionResult)
@@ -1207,7 +1207,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Event triggered when a character find ground (walkable or non-walkable) as a result of a downcast sweep (eg: FindGround method).
+        /// 캐릭터가 다운캐스트 스윕 결과로 지면 (걸을 수 있는 지면 또는 걸을 수 없는 지면)을 찾을 때 트리거되는 이벤트입니다 (예: FindGround 메서드).
         /// </summary>
 
         protected virtual void OnFoundGround(ref FindGroundResult foundGround)
@@ -1216,44 +1216,44 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Event triggered when character enter Walking movement mode (ie: isOnWalkableGround AND isConstrainedToGround).
+        /// 캐릭터가 걷는 이동 모드에 들어갈 때 (예: isOnWalkableGround 및 isConstrainedToGround) 트리거되는 이벤트입니다.
         /// </summary>
 
         protected virtual void OnLanded(Vector3 landingVelocity)
         {
             Landed?.Invoke(landingVelocity);
         }
-        
+
         /// <summary>
-        /// Called when character crouches.
+        /// 캐릭터가 웅크리기 상태에 들어갈 때 호출됩니다.
         /// </summary>
-        
+
         protected virtual void OnCrouched()
         {
             Crouched?.Invoke();
         }
-        
+
         /// <summary>
-        /// Called when character un crouches.
+        /// 캐릭터가 웅크리기 상태에서 벗어날 때 호출됩니다.
         /// </summary>
 
         protected virtual void OnUnCrouched()
         {
             UnCrouched?.Invoke();
         }
-        
+
         /// <summary>
-        /// Called when a jump has been successfully triggered.
+        /// 점프가 성공적으로 트리거되었을 때 호출됩니다.
         /// </summary>
-        
+
         protected virtual void OnJumped()
         {
             Jumped?.Invoke();
         }
-        
+
         /// <summary>
-        /// Called when Character reaches jump apex (eg: change in vertical speed from positive to negative).
-        /// Only triggered if notifyJumpApex == true.
+        /// 캐릭터가 점프 최고점에 도달했을 때 (예: 수직 속도가 양수에서 음수로 변할 때) 호출됩니다.
+        /// notifyJumpApex == true인 경우에만 트리거됩니다.
         /// </summary>
 
         protected virtual void OnReachedJumpApex()
@@ -1264,9 +1264,9 @@ namespace ECM2
         #endregion
 
         #region METHODS
-        
+
         /// <summary>
-        /// Returns the Character's gravity vector modified by gravityScale.
+        /// 캐릭터의 중력 벡터를 gravityScale로 수정한 값을 반환합니다.
         /// </summary>
 
         public Vector3 GetGravityVector()
@@ -1275,16 +1275,16 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Returns the gravity direction (normalized).
+        /// 중력 방향 (정규화된 벡터)을 반환합니다.
         /// </summary>
 
         public Vector3 GetGravityDirection()
         {
             return gravity.normalized;
         }
-        
+
         /// <summary>
-        /// Returns the current gravity magnitude factoring current gravity scale.
+        /// 현재 중력 규모를 고려한 중력 크기를 반환합니다.
         /// </summary>
 
         public float GetGravityMagnitude()
@@ -1293,16 +1293,16 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Sets the Character's gravity vector
+        /// 캐릭터의 중력 벡터를 설정합니다.
         /// </summary>
 
         public void SetGravityVector(Vector3 newGravityVector)
         {
             _gravity = newGravityVector;
         }
-        
+
         /// <summary>
-        /// Start / Stops Auto-simulation coroutine (ie: LateFixedUpdate).
+        /// Auto-simulation 코루틴 (예: LateFixedUpdate)을 시작/중지합니다.
         /// </summary>
 
         private void EnableAutoSimulationCoroutine(bool enable)
@@ -1320,9 +1320,9 @@ namespace ECM2
                     StopCoroutine(_lateFixedUpdateCoroutine);
             }
         }
-        
+
         /// <summary>
-        /// Cache used components.
+        /// 사용된 구성 요소를 캐시합니다.
         /// </summary>
 
         protected virtual void CacheComponents()
@@ -1340,88 +1340,88 @@ namespace ECM2
                 characterMovement.enablePhysicsInteraction = _enablePhysicsInteraction;
                 characterMovement.physicsInteractionAffectsCharacters = _applyPushForceToCharacters;
                 characterMovement.pushForceScale = _pushForceScale;
-                
+
                 mass = _mass;
             }
         }
-        
+
         /// <summary>
-        /// Sets the given new volume as our current Physics Volume.
-        /// Trigger PhysicsVolumeChanged event.
+        /// 주어진 새로운 볼륨을 현재 Physics Volume으로 설정합니다.
+        /// PhysicsVolumeChanged 이벤트를 트리거합니다.
         /// </summary>
 
         protected virtual void SetPhysicsVolume(PhysicsVolume newPhysicsVolume)
         {
-            // Do nothing if nothing is changing
-            
+            // 변경 사항이 없으면 아무 것도 하지 않음
+
             if (newPhysicsVolume == physicsVolume)
                 return;
 
-            // Trigger PhysicsVolumeChanged event
+            // PhysicsVolumeChanged 이벤트 트리거
 
             OnPhysicsVolumeChanged(newPhysicsVolume);
 
-            // Updates current physics volume
+            // 현재 물리 볼륨 업데이트
 
             physicsVolume = newPhysicsVolume;
         }
-        
+
         /// <summary>
-        /// Called when this Character's PhysicsVolume has been changed.
+        /// 이 캐릭터의 PhysicsVolume이 변경되었을 때 호출됩니다.
         /// </summary>
 
         protected virtual void OnPhysicsVolumeChanged(PhysicsVolume newPhysicsVolume)
         {
             if (newPhysicsVolume && newPhysicsVolume.waterVolume)
             {
-                // Entering a water volume
-            
+                // 물 볼륨에 진입
+
                 SetMovementMode(MovementMode.Swimming);
             }
             else if (IsInWaterPhysicsVolume() && newPhysicsVolume == null)
             {
-                // Left a water volume
-            
-                // If Swimming, change to Falling mode
+                // 물 볼륨을 떠남
+
+                // Swimming 상태인 경우 Falling 모드로 변경
 
                 if (IsSwimming())
                 {
                     SetMovementMode(MovementMode.Falling);
                 }
             }
-            
-            // Trigger PhysicsVolumeChanged event
+
+            // PhysicsVolumeChanged 이벤트 트리거
 
             PhysicsVolumeChanged?.Invoke(newPhysicsVolume);
         }
 
         /// <summary>
-        /// Update character's current physics volume.
+        /// 캐릭터의 현재 물리 볼륨을 업데이트합니다.
         /// </summary>
 
         protected virtual void UpdatePhysicsVolume(PhysicsVolume newPhysicsVolume)
         {
-            // Check if Character is inside or outside a PhysicsVolume,
-            // It uses the Character's center as reference point
+            // 캐릭터가 PhysicsVolume 안에 있는지 또는 외부에 있는지 확인합니다.
+            // 캐릭터의 중심을 기준으로 사용됩니다.
 
             Vector3 characterCenter = characterMovement.worldCenter;
 
             if (newPhysicsVolume && newPhysicsVolume.boxCollider.ClosestPoint(characterCenter) == characterCenter)
             {
-                // Entering physics volume
+                // 물리 볼륨에 진입
 
                 SetPhysicsVolume(newPhysicsVolume);
             }
             else
             {
-                // Leaving physics volume
+                // 물리 볼륨을 떠남
 
                 SetPhysicsVolume(null);
             }
         }
 
         /// <summary>
-        /// Attempts to add a new physics volume to our volumes list.
+        /// 볼륨 목록에 새 물리 볼륨을 추가하려고 시도합니다.
         /// </summary>
 
         protected virtual void AddPhysicsVolume(Collider other)
@@ -1431,7 +1431,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Attempts to remove a physics volume from our volumes list.
+        /// 볼륨 목록에서 물리 볼륨을 제거하려고 시도합니다.
         /// </summary>
 
         protected virtual void RemovePhysicsVolume(Collider other)
@@ -1441,12 +1441,12 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Sets as current physics volume the one with higher priority.
+        /// 우선순위가 높은 볼륨을 현재 물리 볼륨으로 설정합니다.
         /// </summary>
 
         protected virtual void UpdatePhysicsVolumes()
         {
-            // Find volume with higher priority
+            // 우선순위가 높은 볼륨 찾기
 
             PhysicsVolume volume = null;
             int maxPriority = int.MinValue;
@@ -1461,23 +1461,23 @@ namespace ECM2
                 volume = vol;
             }
 
-            // Update character's current volume
+            // 캐릭터의 현재 볼륨 업데이트
 
             UpdatePhysicsVolume(volume);
         }
-        
+
         /// <summary>
-        /// Is the character in a water physics volume ?
+        /// 캐릭터가 물 물리 볼륨에 있는지 확인합니다.
         /// </summary>
 
         public virtual bool IsInWaterPhysicsVolume()
         {
             return physicsVolume && physicsVolume.waterVolume;
         }
-        
+
         /// <summary>
-        /// Adds a force to the Character.
-        /// This forces will be accumulated and applied during Move method call.
+        /// 캐릭터에 힘을 추가합니다.
+        /// 이 힘은 축적되어 Move 메서드 호출 시 적용됩니다.
         /// </summary>
 
         public void AddForce(Vector3 force, ForceMode forceMode = ForceMode.Force)
@@ -1486,10 +1486,9 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Applies a force to a rigidbody that simulates explosion effects.
-        /// The explosion is modeled as a sphere with a certain centre position and radius in world space;
-        /// normally, anything outside the sphere is not affected by the explosion and the force decreases in proportion to distance from the centre.
-        /// However, if a value of zero is passed for the radius then the full force will be applied regardless of how far the centre is from the rigidbody.
+        /// 폭발 효과를 시뮬레이트하기 위해 리지드바디에 힘을 적용합니다.
+        /// 폭발은 특정 중심 위치와 반경을 가진 구체로 모델링됩니다. 일반적으로 구체 외부의 것은 폭발에 영향을 받지 않으며 중심에서의 거리에 비례하여 힘이 감소합니다.
+        /// 그러나 반경에 대해 0의 값을 전달하면 중심이 리지드바디에서 얼마나 떨어져 있는지에 관계없이 전체 힘이 적용됩니다.
         /// </summary>
 
         public void AddExplosionForce(float forceMagnitude, Vector3 origin, float explosionRadius,
@@ -1499,9 +1498,9 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Set a pending launch velocity on the Character. This velocity will be processed next Move call.
-        /// If overrideVerticalVelocity is true replace the vertical component of the Character's velocity instead of adding to it.
-        /// If overrideLateralVelocity is true replace the XY part of the Character's velocity instead of adding to it.
+        /// 캐릭터에 대해 보류 중인 발사 속도를 설정합니다. 이 속도는 다음 Move 호출 시 처리됩니다.
+        /// overrideVerticalVelocity가 true인 경우 캐릭터의 수직 구성 요소를 대체합니다.
+        /// overrideLateralVelocity가 true인 경우 캐릭터의 XY 부분을 대체합니다.
         /// </summary>
 
         public void LaunchCharacter(Vector3 launchVelocity, bool overrideVerticalVelocity = false,
@@ -1511,7 +1510,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Should collision detection be enabled ?
+        /// 충돌 감지가 활성화되어야 합니까?
         /// </summary>
 
         public void DetectCollisions(bool detectCollisions)
@@ -1520,7 +1519,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Makes the character to ignore all collisions vs otherCollider.
+        /// 캐릭터가 otherCollider와의 모든 충돌을 무시하도록 합니다.
         /// </summary>
 
         public void IgnoreCollision(Collider otherCollider, bool ignore = true)
@@ -1529,7 +1528,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Makes the character to ignore collisions vs all colliders attached to the otherRigidbody.
+        /// 캐릭터가 otherRigidbody에 부착된 모든 콜라이더와의 충돌을 무시하도록 합니다.
         /// </summary>
 
         public void IgnoreCollision(Rigidbody otherRigidbody, bool ignore = true)
@@ -1538,8 +1537,8 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Makes the character's collider (eg: CapsuleCollider) to ignore all collisions vs otherCollider.
-        /// NOTE: The character can still collide with other during a Move call if otherCollider is in CollisionLayers mask.
+        /// 캐릭터의 콜라이더 (예: 캡슐 콜라이더)가 otherCollider와의 모든 충돌을 무시하도록 합니다.
+        /// 주의: 충돌 레이어 마스크에 있는 경우 다른 Move 호출 중에 충돌할 수 있습니다.
         /// </summary>
 
         public void CapsuleIgnoreCollision(Collider otherCollider, bool ignore = true)
@@ -1548,27 +1547,27 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Temporarily disable ground constraint allowing the Character to freely leave the ground.
-        /// Eg: LaunchCharacter, Jump, etc.
+        /// 지면 제약을 일시적으로 비활성화하여 캐릭터가 자유롭게 지면을 떠날 수 있도록 합니다.
+        /// 예: LaunchCharacter, Jump 등.
         /// </summary>
 
         public void PauseGroundConstraint(float seconds = 0.1f)
         {
             characterMovement.PauseGroundConstraint(seconds);
         }
-        
+
         /// <summary>
-        /// Should movement be constrained to ground when on walkable ground ?
-        /// When enabled, character will be constrained to ground ignoring vertical velocity.  
+        /// 걷을 수 있는 지면에 있을 때 이동을 지면에 제약해야 합니까?
+        /// 활성화된 경우 캐릭터는 수직 속도를 무시하고 지면에 제약됩니다.  
         /// </summary>
 
         public void EnableGroundConstraint(bool enable)
         {
             characterMovement.constrainToGround = enable;
         }
-        
+
         /// <summary>
-        /// Was the character on ground last Move call ?
+        /// 마지막 Move 호출에서 캐릭터가 지면에 있었습니까?
         /// </summary>
 
         public bool WasOnGround()
@@ -1577,7 +1576,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Is the character on ground ?
+        /// 캐릭터가 지면에 있습니까?
         /// </summary>
 
         public bool IsOnGround()
@@ -1586,7 +1585,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Was the character on walkable ground last Move call ?
+        /// 마지막 Move 호출에서 캐릭터가 걷을 수 있는 지면에 있었습니까?
         /// </summary>
 
         public bool WasOnWalkableGround()
@@ -1595,7 +1594,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Is the character on walkable ground ?
+        /// 캐릭터가 걷을 수 있는 지면에 있습니까?
         /// </summary>
 
         public bool IsOnWalkableGround()
@@ -1604,7 +1603,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Was the character on walkable ground AND constrained to ground last Move call ?
+        /// 마지막 Move 호출에서 캐릭터가 걷을 수 있는 지면에 있고 지면에 제약되었습니까?
         /// </summary>
 
         public bool WasGrounded()
@@ -1613,16 +1612,16 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Is the character on walkable ground AND constrained to ground.
+        /// 캐릭터가 걷을 수 있는 지면에 있고 지면에 제약되어 있습니까?
         /// </summary>
 
         public bool IsGrounded()
         {
             return characterMovement.isGrounded;
         }
-        
+
         /// <summary>
-        /// Return the CharacterMovement component. This is guaranteed to be not null.
+        /// CharacterMovement 구성 요소를 반환합니다. null이 아님이 보장됩니다.
         /// </summary>
 
         public CharacterMovement GetCharacterMovement()
@@ -1631,7 +1630,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Return the Animator component or null if not found.
+        /// Animator 구성 요소를 반환하거나 찾을 수 없는 경우 null을 반환합니다.
         /// </summary>
 
         public Animator GetAnimator()
@@ -1640,7 +1639,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Return the RootMotionController or null is not found.
+        /// RootMotionController를 반환하거나 찾을 수 없는 경우 null을 반환합니다.
         /// </summary>
 
         public RootMotionController GetRootMotionController()
@@ -1649,16 +1648,16 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Return the Character's current PhysicsVolume, null if none.
+        /// 캐릭터의 현재 PhysicsVolume을 반환합니다. 없을 경우 null입니다.
         /// </summary>
 
         public PhysicsVolume GetPhysicsVolume()
         {
             return physicsVolume;
         }
-        
+
         /// <summary>
-        /// The Character's current position.
+        /// 캐릭터의 현재 위치입니다.
         /// </summary>
 
         public Vector3 GetPosition()
@@ -1667,8 +1666,8 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Sets the Character's position.
-        /// This complies with the interpolation resulting in a smooth transition between the two positions in any intermediate frames rendered.
+        /// 캐릭터의 위치를 설정합니다.
+        /// 이것은 보간을 준수하여 두 위치 사이의 매 프레임에 부드러운 전환을 제공합니다.
         /// </summary>
 
         public void SetPosition(Vector3 position, bool updateGround = false)
@@ -1677,9 +1676,9 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Instantly modify the character's position.
-        /// Unlike SetPosition this disables rigidbody interpolation (interpolating == true) before updating the character's position resulting in an instant movement.
-        /// If interpolating == true it will re-enable rigidbody interpolation after teleportation.
+        /// 캐릭터의 위치를 즉시 수정합니다.
+        /// SetPosition과 달리 이 메서드는 리지드바디 보간을 비활성화한 후 캐릭터의 위치를 업데이트합니다 (interpolating == true). 이는 즉각적인 움직임을 초래합니다.
+        /// interpolating == true인 경우, 텔레포트 후 리지드바디 보간을 다시 활성화합니다.
         /// </summary>
 
         public void TeleportPosition(Vector3 newPosition, bool interpolating = true, bool updateGround = false)
@@ -1696,9 +1695,9 @@ namespace ECM2
                 characterMovement.interpolation = RigidbodyInterpolation.Interpolate;
             }
         }
-        
+
         /// <summary>
-        /// The Character's current rotation.
+        /// 캐릭터의 현재 회전입니다.
         /// </summary>
 
         public Quaternion GetRotation()
@@ -1707,18 +1706,18 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Sets the Character's current rotation.
+        /// 캐릭터의 현재 회전을 설정합니다.
         /// </summary>
 
         public void SetRotation(Quaternion newRotation)
         {
             characterMovement.rotation = newRotation;
         }
-        
+
         /// <summary>
-        /// Instantly modify the character's rotation.
-        /// Unlike SetRotation this disables rigidbody interpolation (interpolating == true) before updating the character's rotation resulting in an instant rotation.
-        /// If interpolating == true it will re-enable rigidbody interpolation after teleportation.
+        /// 캐릭터의 회전을 즉시 수정합니다.
+        /// SetRotation과 달리 이 메서드는 리지드바디 보간을 비활성화한 후 캐릭터의 회전을 업데이트합니다 (interpolating == true). 이는 즉각적인 회전을 초래합니다.
+        /// interpolating == true인 경우, 텔레포트 후 리지드바디 보간을 다시 활성화합니다.
         /// </summary>
 
         public void TeleportRotation(Quaternion newRotation, bool interpolating = true)
@@ -1735,9 +1734,9 @@ namespace ECM2
                 characterMovement.interpolation = RigidbodyInterpolation.Interpolate;
             }
         }
-        
+
         /// <summary>
-        /// The Character's current up vector.
+        /// 캐릭터의 현재 업 벡터입니다.
         /// </summary>
 
         public virtual Vector3 GetUpVector()
@@ -1746,7 +1745,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// The Character's current right vector.
+        /// 캐릭터의 현재 오른쪽 벡터입니다.
         /// </summary>
 
         public virtual Vector3 GetRightVector()
@@ -1755,19 +1754,19 @@ namespace ECM2
         }
 
         /// <summary>
-        /// The Character's current forward vector.
+        /// 캐릭터의 현재 앞쪽 벡터입니다.
         /// </summary>
 
         public virtual Vector3 GetForwardVector()
         {
             return transform.forward;
         }
-        
+
         /// <summary>
-        /// Orient the character's towards the given direction (in world space) using rotationRate as the rate of rotation change.
-        /// If updateYawOnly is true, rotation will affect character's yaw axis only (defined by its up-axis).
+        /// 회전율을 사용하여 캐릭터를 지정된 방향으로 회전시킵니다.
+        /// updateYawOnly가 true인 경우 회전은 캐릭터의 요 축에만 영향을 미칩니다.
         /// </summary>
-        
+
         public virtual void RotateTowards(Vector3 worldDirection, float deltaTime, bool updateYawOnly = true)
         {
             Vector3 characterUp = GetUpVector();
@@ -1781,9 +1780,9 @@ namespace ECM2
             Quaternion targetRotation = Quaternion.LookRotation(worldDirection, characterUp);
             characterMovement.rotation = Quaternion.RotateTowards(rotation, targetRotation, rotationRate * deltaTime);
         }
-        
+
         /// <summary>
-        /// Append root motion rotation to Character's rotation.
+        /// 루트 모션 회전을 캐릭터 회전에 추가합니다.
         /// </summary>
 
         protected virtual void RotateWithRootMotion()
@@ -1791,11 +1790,11 @@ namespace ECM2
             if (useRootMotion && rootMotionController)
                 characterMovement.rotation = rootMotionController.ConsumeRootMotionRotation() * characterMovement.rotation;
         }
-        
+
         /// <summary>
-        /// The current relative velocity of the Character.
-        /// The velocity is relative because it won't track movements to the transform that happen outside of this,
-        /// e.g. character parented under another moving Transform, such as a moving vehicle.
+        /// 캐릭터의 현재 상대 속도입니다.
+        /// 이 속도는 상대적이므로 이 외부에서 발생하는 변환에 대한 움직임을 추적하지 않습니다,
+        /// 예: 다른 움직이는 변환 하에 부모가 된 캐릭터, 움직이는 차량 등.
         /// </summary>
 
         public Vector3 GetVelocity()
@@ -1804,43 +1803,43 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Sets the character's velocity.
+        /// 캐릭터의 속도를 설정합니다.
         /// </summary>
 
         public void SetVelocity(Vector3 newVelocity)
         {
             characterMovement.velocity = newVelocity;
         }
-        
+
         /// <summary>
-        /// The Character's current speed.
+        /// 캐릭터의 현재 속도입니다.
         /// </summary>
 
         public float GetSpeed()
         {
             return characterMovement.velocity.magnitude;
         }
-        
+
         /// <summary>
-        /// The character's radius
+        /// 캐릭터의 반지름입니다.
         /// </summary>
 
         public float GetRadius()
         {
             return characterMovement.radius;
         }
-        
+
         /// <summary>
-        /// The character's current height.
+        /// 캐릭터의 현재 높이입니다.
         /// </summary>
 
         public float GetHeight()
         {
             return characterMovement.height;
         }
-        
+
         /// <summary>
-        /// The current movement direction (in world space), eg: the movement direction used to move this Character.
+        /// 현재 이동 모드에 대한 움직임 방향 (월드 공간에서)입니다.
         /// </summary>
 
         public Vector3 GetMovementDirection()
@@ -1849,26 +1848,26 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Assigns the Character's movement direction (in world space), eg: our desired movement direction vector.
+        /// 캐릭터의 이동 방향 (월드 공간에서)을 할당합니다. 예: 우리가 원하는 이동 방향 벡터.
         /// </summary>
 
         public void SetMovementDirection(Vector3 movementDirection)
         {
             _movementDirection = movementDirection;
         }
-        
+
         /// <summary>
-        /// Sets the yaw value.
-        /// This will reset current pitch and roll values.
+        /// 요 값을 설정합니다.
+        /// 현재 피치 및 롤 값을 재설정합니다.
         /// </summary>
 
         public virtual void SetYaw(float value)
         {
             characterMovement.rotation = Quaternion.Euler(0.0f, value, 0.0f);
         }
-        
+
         /// <summary>
-        /// Amount to add to Yaw (up axis).
+        /// 요 입력값을 추가합니다 (위쪽 축).
         /// </summary>
 
         public virtual void AddYawInput(float value)
@@ -1877,7 +1876,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Amount to add to Pitch (right axis).
+        /// 피치 입력값을 추가합니다 (오른쪽 축).
         /// </summary>
 
         public virtual void AddPitchInput(float value)
@@ -1886,7 +1885,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Amount to add to Roll (forward axis).
+        /// 롤 입력값을 추가합니다 (앞쪽 축).
         /// </summary>
 
         public virtual void AddRollInput(float value)
@@ -1895,16 +1894,16 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Append input rotation (eg: AddPitchInput, AddYawInput, AddRollInput) to character rotation.
+        /// 입력 회전 (예: AddPitchInput, AddYawInput, AddRollInput)을 캐릭터 회전에 추가합니다.
         /// </summary>
 
         protected virtual void ConsumeRotationInput()
         {
-            // Apply rotation input (if any)
+            // 회전 입력을 적용합니다 (있을 경우)
 
             if (_rotationInput != Vector3.zero)
             {
-                // Consumes rotation input (e.g. apply and clear it)
+                // 회전 입력을 소비합니다 (예: 적용하고 지웁니다)
 
                 characterMovement.rotation *= Quaternion.Euler(_rotationInput);
 
@@ -1913,44 +1912,43 @@ namespace ECM2
         }
 
         /// <summary>
-        /// The Character's current movement mode.
+        /// 캐릭터의 현재 이동 모드입니다.
         /// </summary>
 
         public MovementMode GetMovementMode()
         {
             return _movementMode;
         }
-        
+
         /// <summary>
-        /// Character's User-defined custom movement mode (sub-mode).
-        /// Only applicable if _movementMode == Custom.
+        /// 캐릭터의 사용자 정의 이동 모드 (하위 모드).
+        /// _movementMode == Custom인 경우에만 적용됩니다.
         /// </summary>
 
         public int GetCustomMovementMode()
         {
             return _customMovementMode;
         }
-        
+
         /// <summary>
-        /// Change movement mode.
-        /// The new custom sub-mode (newCustomMode), is only applicable if newMovementMode == Custom.
-        ///
-        /// Trigger OnMovementModeChanged event.
+        /// 이동 모드를 변경합니다.
+        /// 새로운 사용자 정의 하위 모드 (newCustomMode)는 newMovementMode == Custom인 경우에만 적용됩니다.
+        /// OnMovementModeChanged 이벤트를 트리거합니다.
         /// </summary>
 
         public void SetMovementMode(MovementMode newMovementMode, int newCustomMode = 0)
         {
-            // Do nothing if nothing is changing
+            // 변경 사항이 없으면 아무 것도 하지 않음
 
             if (newMovementMode == _movementMode)
             {
-                // Allow changes in custom sub-modes
+                // 사용자 정의 하위 모드의 변경을 허용합니다
 
                 if (newMovementMode != MovementMode.Custom || newCustomMode == _customMovementMode)
                     return;
             }
 
-            // Performs movement mode change
+            // 이동 모드 변경 수행
 
             MovementMode prevMovementMode = _movementMode;
             int prevCustomMode = _customMovementMode;
@@ -1960,88 +1958,88 @@ namespace ECM2
 
             OnMovementModeChanged(prevMovementMode, prevCustomMode);
         }
-        
+
         /// <summary>
-        /// Called after MovementMode has changed.
-        /// Does special handling for starting certain modes, eg: enable / disable ground constraint, etc.
-        /// If overridden, base method MUST be called.
+        /// MovementMode가 변경된 후 호출됩니다.
+        /// 특정 모드 시작 시 특수 처리를 수행합니다, 예: 지면 제약 활성화 / 비활성화 등.
+        /// 재정의된 경우 base 메서드를 호출해야 합니다.
         /// </summary>
 
         protected virtual void OnMovementModeChanged(MovementMode prevMovementMode, int prevCustomMode)
         {
-            // Perform additional tasks on mode change
+            // 모드 변경 시 추가 작업 수행
 
             switch (movementMode)
             {
                 case MovementMode.None:
-                    
-                    // Entering None mode...
 
-                    // Disable Character's movement and clear any pending forces
-                    
+                    // None 모드로 전환...
+
+                    // 캐릭터의 이동을 비활성화하고 보류 중인 모든 힘을 제거합니다
+
                     characterMovement.velocity = Vector3.zero;
                     characterMovement.ClearAccumulatedForces();
-                    
+
                     break;
-                
+
                 case MovementMode.Walking:
-                    
-                    // Entering Walking mode...
-                    
-                    // Reset jump
-                    
+
+                    // 걷기 모드로 전환...
+
+                    // 점프 리셋
+
                     ResetJumpState();
-                    
-                    // If was flying or swimming, enable ground constraint
-            
+
+                    // 날거나 수영 중이었으면 지면 제약을 활성화합니다
+
                     if (prevMovementMode == MovementMode.Flying || prevMovementMode == MovementMode.Swimming)
                         characterMovement.constrainToGround = true;
-                    
-                    // Trigger Landed event
-                    
+
+                    // 착지 이벤트 트리거
+
                     OnLanded(characterMovement.landedVelocity);
-                    
+
                     break;
-                
+
                 case MovementMode.Falling:
-                    
-                    // Entering Falling mode...
-                    
-                    // If was flying or swimming, enable ground constraint as it could lands on walkable ground
-                    
+
+                    // 낙하 모드로 전환...
+
+                    // 날거나 수영 중이었으면 착지할 수 있도록 지면 제약을 활성화합니다
+
                     if (prevMovementMode == MovementMode.Flying || prevMovementMode == MovementMode.Swimming)
                         characterMovement.constrainToGround = true;
-                    
+
                     break;
-                
+
                 case MovementMode.Flying:
                 case MovementMode.Swimming:
-                    
-                    // Entering Flying or Swimming mode...
-                    
-                    // Reset jump
+
+                    // 비행 또는 수영 모드로 전환...
+
+                    // 점프 리셋
 
                     ResetJumpState();
-                    
-                    // Disable ground constraint
+
+                    // 지면 제약 비활성화
 
                     characterMovement.constrainToGround = false;
-                    
+
                     break;
             }
-            
-            // Left Falling mode, reset falling timer
+
+            // 낙하 모드를 벗어났을 때 낙하 타이머 리셋
 
             if (!IsFalling())
                 _fallingTime = 0.0f;
-            
-            // Trigger movement mode changed event
-            
+
+            // 이동 모드 변경 이벤트 트리거
+
             MovementModeChanged?.Invoke(prevMovementMode, prevCustomMode);
         }
-        
+
         /// <summary>
-        /// Returns true if the Character is in the Walking movement mode (eg: on walkable ground).
+        /// 캐릭터가 걷기 이동 모드에 있는지 여부를 반환합니다 (예: 걷을 수 있는 지면에 있는 경우).
         /// </summary>
 
         public virtual bool IsWalking()
@@ -2050,7 +2048,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Returns true if currently falling, eg: on air (not flying) or in not walkable ground.
+        /// 현재 낙하 중인지 여부를 반환합니다, 예: 공중에 있는 경우 (비행하지 않음) 또는 걷을 수 없는 지면에 있는 경우.
         /// </summary>
 
         public virtual bool IsFalling()
@@ -2059,7 +2057,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Returns true if currently flying (moving through a non-water volume without resting on the ground).
+        /// 현재 비행 중인지 여부를 반환합니다 (지면에 안착하지 않고 비중력 상태에서 이동 중인 경우).
         /// </summary>
 
         public virtual bool IsFlying()
@@ -2068,7 +2066,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Returns true if currently swimming (moving through a water volume).
+        /// 현재 수영 중인지 여부를 반환합니다 (물리 볼륨을 통해 이동 중인 경우).
         /// </summary>
 
         public virtual bool IsSwimming()
@@ -2077,7 +2075,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// The maximum speed for current movement mode (accounting crouching state).
+        /// 현재 이동 모드에 대한 최대 속도 (웅크린 상태 포함)를 반환합니다.
         /// </summary>
 
         public virtual float GetMaxSpeed()
@@ -2102,7 +2100,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// The ground speed that we should accelerate up to when walking at minimum analog stick tilt.
+        /// 최소 아날로그 스틱 기울기에서 걷기 시 가속할 지면 속도입니다.
         /// </summary>
 
         public virtual float GetMinAnalogSpeed()
@@ -2119,7 +2117,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// The acceleration for current movement mode.
+        /// 현재 이동 모드에 대한 가속도입니다.
         /// </summary>
 
         public virtual float GetMaxAcceleration()
@@ -2131,7 +2129,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// The braking deceleration for current movement mode.
+        /// 현재 이동 모드에 대한 제동 감속도입니다.
         /// </summary>
 
         public virtual float GetMaxBrakingDeceleration()
@@ -2142,12 +2140,12 @@ namespace ECM2
                     return brakingDecelerationWalking;
 
                 case MovementMode.Falling:
-                {
-                    // Falling,
-                    // BUT ON non-walkable ground, bypass braking deceleration to force slide off
+                    {
+                        // 낙하 중일 때,
+                        // 하지만 걸을 수 없는 지면에서는 제동 감속을 무시하여 미끄러지도록 강제합니다
 
-                    return characterMovement.isOnGround ? 0.0f : brakingDecelerationFalling;
-                }
+                        return characterMovement.isOnGround ? 0.0f : brakingDecelerationFalling;
+                    }
 
                 case MovementMode.Swimming:
                     return brakingDecelerationSwimming;
@@ -2159,15 +2157,15 @@ namespace ECM2
                     return 0.0f;
             }
         }
-        
+
         /// <summary>
-        /// Computes the analog input modifier (0.0f to 1.0f) based on current input vector and desired velocity.
+        /// 현재 입력 벡터와 원하는 속도를 기반으로 아날로그 입력 수정자를 계산합니다 (0.0f에서 1.0f까지).
         /// </summary>
-        
+
         protected virtual float ComputeAnalogInputModifier(Vector3 desiredVelocity)
         {
             float maxSpeed = GetMaxSpeed();
-            
+
             if (desiredVelocity.sqrMagnitude > 0.0f && maxSpeed > 0.00000001f)
             {
                 return Mathf.Clamp01(desiredVelocity.magnitude / maxSpeed);
@@ -2175,55 +2173,55 @@ namespace ECM2
 
             return 0.0f;
         }
-        
+
         /// <summary>
-        /// Apply friction and braking deceleration to given velocity.
-        /// Returns modified input velocity.
+        /// 마찰과 제동 감속을 주어진 속도에 적용합니다.
+        /// 수정된 입력 속도를 반환합니다.
         /// </summary>
-        
+
         public virtual Vector3 ApplyVelocityBraking(Vector3 velocity, float friction, float maxBrakingDeceleration, float deltaTime)
         {
             const float kMinTickTime = 0.000001f;
             if (velocity.isZero() || deltaTime < kMinTickTime)
                 return velocity;
-            
+
             bool isZeroFriction = friction == 0.0f;
             bool isZeroBraking = maxBrakingDeceleration == 0.0f;
             if (isZeroFriction && isZeroBraking)
                 return velocity;
-            
-            // Decelerate to brake to a stop
-            
+
+            // 멈추기 위해 제동
+
             Vector3 oldVel = velocity;
             Vector3 revAccel = isZeroBraking ? Vector3.zero : -maxBrakingDeceleration * velocity.normalized;
-            
-            // Subdivide braking to get reasonably consistent results at lower frame rates
-            
+
+            // 낮은 프레임 레이트에서 일관된 결과를 얻기 위해 제동을 세분화
+
             const float kMaxTimeStep = 1.0f / 33.0f;
-            
+
             float remainingTime = deltaTime;
             while (remainingTime >= kMinTickTime)
             {
-                // Zero friction uses constant deceleration, so no need for iteration
+                // 제로 마찰은 일정한 감속을 사용하므로 반복이 필요하지 않음
 
                 float dt = remainingTime > kMaxTimeStep && !isZeroFriction
                     ? Mathf.Min(kMaxTimeStep, remainingTime * 0.5f)
                     : remainingTime;
-                
+
                 remainingTime -= dt;
-                
-                // Apply friction and braking
-                
+
+                // 마찰 및 제동 적용
+
                 velocity += (-friction * velocity + revAccel) * dt;
-                
-                // Don't reverse direction
-                
+
+                // 방향을 반전하지 않음
+
                 if (Vector3.Dot(velocity, oldVel) <= 0.0f)
                     return Vector3.zero;
             }
-            
-            // Clamp to zero if nearly zero, or if below min threshold and braking
-            
+
+            // 거의 제로인 경우 또는 제동 중일 때 최소 임계값 이하인 경우 제로로 클램프
+
             float sqrSpeed = velocity.sqrMagnitude;
             if (sqrSpeed <= 0.00001f || (!isZeroBraking && sqrSpeed <= 0.1f))
                 return Vector3.zero;
@@ -2232,8 +2230,7 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Calculates a new velocity for the given state, applying the effects of friction or
-        /// braking friction and acceleration or deceleration.
+        /// 마찰 또는 제동 마찰 및 가속도 또는 감속도의 효과를 적용하여 주어진 상태에 대한 새로운 속도를 계산합니다.
         /// </summary>
 
         public virtual Vector3 CalcVelocity(Vector3 velocity, Vector3 desiredVelocity, float friction, bool isFluid, float deltaTime)
@@ -2241,61 +2238,61 @@ namespace ECM2
             const float kMinTickTime = 0.000001f;
             if (deltaTime < kMinTickTime)
                 return velocity;
-            
-            // Compute requested move direction
+
+            // 요청된 이동 방향 계산
 
             float desiredSpeed = desiredVelocity.magnitude;
             Vector3 desiredMoveDirection = desiredSpeed > 0.0f ? desiredVelocity / desiredSpeed : Vector3.zero;
 
-            // Requested acceleration (factoring analog input)
+            // 요청된 가속도 (아날로그 입력을 고려함)
 
             float analogInputModifier = ComputeAnalogInputModifier(desiredVelocity);
             Vector3 inputAcceleration = GetMaxAcceleration() * analogInputModifier * desiredMoveDirection;
 
-            // Actual max speed (factoring analog input)
+            // 실제 최대 속도 (아날로그 입력을 고려함)
 
             float actualMaxSpeed = Mathf.Max(GetMinAnalogSpeed(), GetMaxSpeed() * analogInputModifier);
-            
-            // Apply braking or deceleration
-            
+
+            // 제동 또는 감속 적용
+
             bool isZeroAcceleration = inputAcceleration.isZero();
             bool isVelocityOverMax = velocity.isExceeding(actualMaxSpeed);
-            
-            // Only apply braking if there is no acceleration, or we are over our max speed and need to slow down to it.
+
+            // 가속도가 없거나 최대 속도를 초과하여 속도를 줄여야 하는 경우에만 제동을 적용합니다.
 
             if (isZeroAcceleration || isVelocityOverMax)
             {
                 Vector3 oldVelocity = velocity;
-                
-                // Apply friction and braking
+
+                // 마찰 및 제동 적용
 
                 float actualBrakingFriction = useSeparateBrakingFriction ? brakingFriction : friction;
                 float actualBrakingAcceleration =
                     useSeparateBrakingDeceleration ? brakingDeceleration : GetMaxBrakingDeceleration();
 
                 velocity = ApplyVelocityBraking(velocity, actualBrakingFriction, actualBrakingAcceleration, deltaTime);
-                
-                // Don't allow braking to lower us below max speed if we started above it.
-                
+
+                // 시작할 때 최대 속도를 초과한 경우 제동이 최대 속도 이하로 낮아지지 않도록 합니다.
+
                 if (isVelocityOverMax && velocity.sqrMagnitude < actualMaxSpeed.square() && Vector3.Dot(inputAcceleration, oldVelocity) > 0.0f)
                     velocity = oldVelocity.normalized * actualMaxSpeed;
             }
             else
             {
-                // Friction, this affects our ability to change direction
-                
+                // 마찰, 이는 방향 변경 능력에 영향을 미칩니다
+
                 Vector3 accelDir = inputAcceleration.normalized;
                 float velMag = velocity.magnitude;
 
                 velocity -= (velocity - accelDir * velMag) * Mathf.Min(friction * deltaTime, 1.0f);
             }
-            
-            // Apply fluid friction
-            
+
+            // 유체 마찰 적용
+
             if (isFluid)
                 velocity *= 1.0f - Mathf.Min(friction * deltaTime, 1.0f);
-            
-            // Apply input acceleration
+
+            // 입력 가속도 적용
 
             if (!isZeroAcceleration)
             {
@@ -2307,59 +2304,58 @@ namespace ECM2
 
             return velocity;
         }
-        
+
         /// <summary>
-        /// Enforce constraints on input vector given current movement mode.
-        /// Return constrained input vector.
+        /// 현재 이동 모드를 기준으로 입력 벡터에 대한 제약 조건을 적용합니다.
+        /// 제약된 입력 벡터를 반환합니다.
         /// </summary>
-        
+
         public virtual Vector3 ConstrainInputVector(Vector3 inputVector)
         {
             Vector3 worldUp = -GetGravityDirection();
-            
+
             float inputVectorDotWorldUp = Vector3.Dot(inputVector, worldUp);
             if (!Mathf.Approximately(inputVectorDotWorldUp, 0.0f) && (IsWalking() || IsFalling()))
                 inputVector = Vector3.ProjectOnPlane(inputVector, worldUp);
 
             return characterMovement.ConstrainVectorToPlane(inputVector);
         }
-        
+
         /// <summary>
-        /// Calculate the desired velocity for current movement mode.
+        /// 현재 이동 모드에 대한 원하는 속도를 계산합니다.
         /// </summary>
 
         protected virtual void CalcDesiredVelocity(float deltaTime)
         {
-            // Current movement direction
+            // 현재 이동 방향
 
             Vector3 movementDirection = Vector3.ClampMagnitude(GetMovementDirection(), 1.0f);
 
-            // The desired velocity from animation (if using root motion) or from input movement vector
+            // 애니메이션에서 원하는 속도 (루트 모션을 사용하는 경우) 또는 입력 이동 벡터에서 원하는 속도
 
             Vector3 desiredVelocity = useRootMotion && rootMotionController
                 ? rootMotionController.ConsumeRootMotionVelocity(deltaTime)
                 : movementDirection * GetMaxSpeed();
-            
-            // Return constrained desired velocity
+
+            // 제약된 원하는 속도 반환
 
             _desiredVelocity = ConstrainInputVector(desiredVelocity);
         }
-        
+
         /// <summary>
-        /// Calculated desired velocity for current movement mode.
+        /// 현재 이동 모드에 대한 원하는 속도를 계산합니다.
         /// </summary>
 
         public virtual Vector3 GetDesiredVelocity()
         {
             return _desiredVelocity;
         }
-        
+
         /// <summary>
-        /// Calculates the signed slope angle in degrees for current movement direction.
-        /// Positive if moving up-slope, negative if moving down-slope or 0 if Character
-        /// is not on ground or not moving (ie: movementDirection == Vector3.zero).
+        /// 현재 이동 방향에 대한 기울기 각도를 계산합니다.
+        /// 상향 경사 시 양수, 하향 경사 시 음수 또는 캐릭터가 지면에 없거나 움직이지 않는 경우 0입니다 (예: movementDirection == Vector3.zero).
         /// </summary>
-        
+
         public float GetSignedSlopeAngle()
         {
             Vector3 movementDirection = GetMovementDirection();
@@ -2371,10 +2367,10 @@ namespace ECM2
 
             return Mathf.Asin(Vector3.Dot(projMovementDirection, -GetGravityDirection())) * Mathf.Rad2Deg;
         }
-        
+
         /// <summary>
-        /// Apply a downward force when standing on top of non-kinematic physics objects (if applyStandingDownwardForce == true).
-        /// The force applied is: mass * gravity * standingDownwardForceScale
+        /// 비키네틱 물리 객체의 상단에 서 있을 때 아래쪽 힘을 적용합니다 (applyStandingDownwardForce == true인 경우).
+        /// 적용되는 힘은: 질량 * 중력 * standingDownwardForceScale입니다.
         /// </summary>
 
         protected virtual void ApplyDownwardsForce()
@@ -2388,85 +2384,85 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Update Character's velocity while moving on walkable surfaces.
+        /// 걷을 수 있는 표면에서 이동할 때 캐릭터의 속도를 업데이트합니다.
         /// </summary>
-        
+
         protected virtual void WalkingMovementMode(float deltaTime)
         {
-            // If using root motion, use animation velocity
+            // 루트 모션을 사용하는 경우 애니메이션 속도 사용
 
             if (useRootMotion && rootMotionController)
                 characterMovement.velocity = GetDesiredVelocity();
             else
             {
-                // Calculate new velocity
+                // 새로운 속도 계산
 
                 characterMovement.velocity =
                     CalcVelocity(characterMovement.velocity, GetDesiredVelocity(), groundFriction, false, deltaTime);
             }
-            
-            // Apply downwards force
+
+            // 아래쪽 힘 적용
 
             if (applyStandingDownwardForce)
                 ApplyDownwardsForce();
         }
-        
+
         /// <summary>
-        /// True if the character is currently crouched, false otherwise.
+        /// 캐릭터가 현재 웅크리고 있는지 여부를 확인합니다.
         /// </summary>
 
         public virtual bool IsCrouched()
         {
             return _isCrouched;
         }
-        
+
         /// <summary>
-        /// Request the Character to crouch.
-        /// The request is processed on the next simulation update.
-        /// Call this from an input event (such as a button 'down' event).
+        /// 캐릭터가 웅크리기를 요청합니다.
+        /// 요청은 다음 시뮬레이션 업데이트에서 처리됩니다.
+        /// 입력 이벤트 (예: 버튼 '다운' 이벤트)에서 호출합니다.
         /// </summary>
 
         public virtual void Crouch()
         {
             crouchInputPressed = true;
         }
-        
+
         /// <summary>
-        /// Request the Character to stop crouching.
-        /// The request is processed on the next simulation update.
-        /// Call this from an input event (such as a button 'up' event).
+        /// 캐릭터가 웅크리기를 멈추도록 요청합니다.
+        /// 요청은 다음 시뮬레이션 업데이트에서 처리됩니다.
+        /// 입력 이벤트 (예: 버튼 '업' 이벤트)에서 호출합니다.
         /// </summary>
 
         public virtual void UnCrouch()
         {
             crouchInputPressed = false;
         }
-        
+
         /// <summary>
-        /// Determines if the Character is able to crouch in its current state.
-        /// Defaults to Walking mode only.
+        /// 현재 상태에서 캐릭터가 웅크릴 수 있는지 여부를 결정합니다.
+        /// 기본적으로 걷기 모드만 해당됩니다.
         /// </summary>
 
         protected virtual bool IsCrouchAllowed()
         {
             return canEverCrouch && IsWalking();
         }
-        
+
         /// <summary>
-        /// Determines if the Character is able to un crouch.
-        /// Eg. Check if there's room to expand capsule, etc.
+        /// 캐릭터가 웅크릴 수 있는지 여부를 결정합니다.
+        /// 예: 캡슐 확장 공간이 있는지 확인 등.
         /// </summary>
-        
+
         protected virtual bool CanUnCrouch()
         {
             bool overlapped = characterMovement.CheckHeight(_unCrouchedHeight);
             return !overlapped;
         }
-        
+
         /// <summary>
-        /// Check crouch input and attempts to perform the requested crouch.
+        /// 웅크리기 입력을 확인하고 요청된 웅크리기를 수행하려고 시도합니다.
         /// </summary>
-        
+
         protected virtual void CheckCrouchInput()
         {
             if (!_isCrouched && crouchInputPressed && IsCrouchAllowed())
@@ -2480,64 +2476,64 @@ namespace ECM2
             {
                 if (!CanUnCrouch())
                     return;
-                
+
                 _isCrouched = false;
                 characterMovement.SetHeight(_unCrouchedHeight);
 
                 OnUnCrouched();
             }
         }
-        
+
         /// <summary>
-        /// Update Character's velocity while falling.
-        /// Applies gravity and make sure it don't exceed terminal velocity.
+        /// 낙하 중 속도를 업데이트합니다.
+        /// 중력을 적용하고 단말 속도를 초과하지 않도록 합니다.
         /// </summary>
 
         protected virtual void FallingMovementMode(float deltaTime)
         {
-            // Current target velocity
+            // 현재 목표 속도
 
             Vector3 desiredVelocity = GetDesiredVelocity();
-            
-            // World-up defined by gravity direction
+
+            // 중력 방향에 의해 정의된 월드 업
 
             Vector3 worldUp = -GetGravityDirection();
-            
-            // On not walkable ground...
+
+            // 걷을 수 없는 지면에 있는 경우...
 
             if (IsOnGround() && !IsOnWalkableGround())
             {
-                // If moving into the 'wall', limit contribution
+                // '벽'으로 이동하는 경우 기여도 제한
 
                 Vector3 groundNormal = characterMovement.groundNormal;
 
                 if (Vector3.Dot(desiredVelocity, groundNormal) < 0.0f)
                 {
-                    // Allow movement parallel to the wall, but not into it because that may push us up
+                    // 벽과 평행하게 이동할 수는 있지만 벽으로 밀어내지 않도록 합니다
 
                     Vector3 groundNormal2D = Vector3.ProjectOnPlane(groundNormal, worldUp).normalized;
                     desiredVelocity = Vector3.ProjectOnPlane(desiredVelocity, groundNormal2D);
                 }
 
-                // Make velocity calculations planar by projecting the up vector into non-walkable surface
+                // 걷을 수 없는 표면에 평면 투영하여 속도 계산을 평면으로 만듭니다
 
                 worldUp = Vector3.ProjectOnPlane(worldUp, groundNormal).normalized;
             }
 
-            // Separate velocity into its components
+            // 속도를 구성 요소로 분리
 
             Vector3 verticalVelocity = Vector3.Project(characterMovement.velocity, worldUp);
             Vector3 lateralVelocity = characterMovement.velocity - verticalVelocity;
 
-            // Update lateral velocity
+            // 측면 속도 업데이트
 
             lateralVelocity = CalcVelocity(lateralVelocity, desiredVelocity, fallingLateralFriction, false, deltaTime);
 
-            // Update vertical velocity
+            // 수직 속도 업데이트
 
             verticalVelocity += gravity * deltaTime;
 
-            // Don't exceed terminal velocity.
+            // 단말 속도를 초과하지 않도록 합니다.
 
             float actualFallSpeed = maxFallSpeed;
             if (physicsVolume)
@@ -2546,76 +2542,76 @@ namespace ECM2
             if (Vector3.Dot(verticalVelocity, worldUp) < -actualFallSpeed)
                 verticalVelocity = Vector3.ClampMagnitude(verticalVelocity, actualFallSpeed);
 
-            // Apply new velocity
+            // 새로운 속도 적용
 
             characterMovement.velocity = lateralVelocity + verticalVelocity;
 
-            // Update falling timer
+            // 낙하 타이머 업데이트
 
             _fallingTime += deltaTime;
         }
 
         /// <summary>
-        /// True if the character is jumping, false otherwise.
+        /// 캐릭터가 점프 중인지 여부를 확인합니다.
         /// </summary>
 
         public virtual bool IsJumping()
         {
             return _isJumping;
         }
-        
+
         /// <summary>
-        /// Request the Character to jump. The request is processed on the next simulation update.
-        /// Call this from an input event (such as a button 'down' event).
+        /// 캐릭터가 점프를 요청합니다. 요청은 다음 시뮬레이션 업데이트에서 처리됩니다.
+        /// 입력 이벤트 (예: 버튼 '다운' 이벤트)에서 호출합니다.
         /// </summary>
-        
+
         public virtual void Jump()
         {
             jumpInputPressed = true;
         }
-        
+
         /// <summary>
-        /// Request the Character to end a jump. The request is processed on the next simulation update.
-        /// Call this from an input event (such as a button 'down' event).
+        /// 캐릭터가 점프를 종료하도록 요청합니다. 요청은 다음 시뮬레이션 업데이트에서 처리됩니다.
+        /// 입력 이벤트 (예: 버튼 '다운' 이벤트)에서 호출합니다.
         /// </summary>
 
         public virtual void StopJumping()
         {
             jumpInputPressed = false;
             jumpInputHoldTime = 0.0f;
-            
+
             ResetJumpState();
         }
-        
+
         /// <summary>
-        /// Reset jump related vars.
+        /// 점프 관련 변수를 리셋합니다.
         /// </summary>
-        
+
         protected virtual void ResetJumpState()
         {
             if (!IsFalling())
                 jumpCurrentCount = 0;
 
             jumpForceTimeRemaining = 0.0f;
-            
+
             _isJumping = false;
         }
-        
+
         /// <summary>
-        /// True if jump is actively providing a force, such as when the jump input is held
-        /// and the time it has been held is less than jumpMaxHoldTime.
+        /// 점프가 힘을 제공하는지 여부를 확인합니다, 예: 점프 입력이 유지되고 있는 동안
+        /// 점프 최대 유지 시간을 초과하지 않았습니다.
         /// </summary>
-        
+
         public virtual bool IsJumpProvidingForce()
         {
             return jumpForceTimeRemaining > 0.0f;
         }
-        
+
         /// <summary>
-        /// Compute the max jump height based on the jumpImpulse velocity and gravity.
-        /// This does not take into account the jumpMaxHoldTime. 
+        /// jumpImpulse 속도와 중력을 기반으로 최대 점프 높이를 계산합니다.
+        /// jumpMaxHoldTime은 고려하지 않습니다.
         /// </summary>
-        
+
         public virtual float GetMaxJumpHeight()
         {
             float gravityMagnitude = GetGravityMagnitude();
@@ -2623,25 +2619,25 @@ namespace ECM2
             {
                 return jumpImpulse * jumpImpulse / (2.0f * gravityMagnitude);
             }
-            
+
             return 0.0f;
         }
-        
+
         /// <summary>
-        /// Compute the max jump height based on the jumpImpulse velocity and gravity.
-        /// This does take into account the jumpMaxHoldTime. 
+        /// jumpImpulse 속도와 중력을 기반으로 최대 점프 높이를 계산합니다.
+        /// jumpMaxHoldTime은 고려합니다.
         /// </summary>
-        
+
         public virtual float GetMaxJumpHeightWithJumpTime()
         {
             float maxJumpHeight = GetMaxJumpHeight();
             return maxJumpHeight + jumpImpulse * jumpMaxHoldTime;
         }
-        
+
         /// <summary>
-        /// Determines if the Character is able to jump in its current state.
+        /// 현재 상태에서 캐릭터가 점프할 수 있는지 여부를 결정합니다.
         /// </summary>
-        
+
         protected virtual bool IsJumpAllowed()
         {
             if (!canJumpWhileCrouching && IsCrouched())
@@ -2649,96 +2645,95 @@ namespace ECM2
 
             return canEverJump && (IsWalking() || IsFalling());
         }
-        
+
         /// <summary>
-        /// Determines if the Character is able to perform the requested jump.
+        /// 요청된 점프를 수행할 수 있는지 여부를 결정합니다.
         /// </summary>
-        
+
         protected virtual bool CanJump()
         {
-            // Ensure that the Character state is valid
+            // 캐릭터 상태가 유효한지 확인
 
             bool isJumpAllowed = IsJumpAllowed();
             if (isJumpAllowed)
             {
-                // Ensure jumpCurrentCount and jumpInputHoldTime are valid
-                
+                // jumpCurrentCount 및 jumpInputHoldTime이 유효한지 확인
+
                 if (!_isJumping || jumpMaxHoldTime <= 0.0f)
                 {
                     if (jumpCurrentCount == 0)
                     {
-                        // On first jump, jumpInputHoldTime MUST be within jumpMaxPreGroundedTime grace period
-                        
+                        // 첫 점프 시 jumpInputHoldTime은 jumpMaxPreGroundedTime 유예 기간 내에 있어야 합니다
+
                         isJumpAllowed = jumpInputHoldTime <= jumpMaxPreGroundedTime;
-                        
-                        // If is a valid jump, reset jumpInputHoldTime,
-                        // otherwise jump hold will be inaccurate due jumpInputHoldTime not starting at zero
-                        
+
+                        // 유효한 점프인 경우 jumpInputHoldTime을 리셋,
+                        // 그렇지 않으면 jumpInputHoldTime이 0에서 시작되지 않아 점프 유지가 부정확해질 수 있습니다
+
                         if (isJumpAllowed)
                             jumpInputHoldTime = 0.0f;
                     }
                     else
                     {
-                        // Consecutive jump, must be enough jumps and a new press (ie: jumpInputHoldTime == 0.0f)
-                        
+                        // 연속 점프, 충분한 점프가 있어야 하며 새로 누른 상태여야 합니다 (즉, jumpInputHoldTime == 0.0f)
+
                         isJumpAllowed = jumpCurrentCount < jumpMaxCount && jumpInputHoldTime == 0.0f;
                     }
                 }
                 else
                 {
-                    // Only consider JumpInputHoldTime as long as:
-                    // A) The jump limit hasn't been met OR
-                    // B) The jump limit has been met AND we were already jumping
+                    // JumpInputHoldTime은 다음과 같은 경우에만 고려됩니다:
+                    // A) 점프 제한이 충족되지 않았거나
+                    // B) 점프 제한이 충족되었고 이미 점프 중인 경우
 
                     bool jumpInputHeld = jumpInputPressed && jumpInputHoldTime < jumpMaxHoldTime;
-                
+
                     isJumpAllowed = jumpInputHeld && (jumpCurrentCount < jumpMaxCount || (_isJumping && jumpCurrentCount == jumpMaxCount));
                 }
             }
 
             return isJumpAllowed;
         }
-        
+
         /// <summary>
-        /// Perform the jump applying jumpImpulse.
-        /// This can be called multiple times in case jump is providing force (ie: variable height jump).
+        /// jumpImpulse를 적용하여 점프를 수행합니다.
+        /// 점프가 힘을 제공하는 경우 (예: 가변 높이 점프) 여러 번 호출될 수 있습니다.
         /// </summary>
-        
+
         protected virtual bool DoJump()
         {
-            // World up, determined by gravity direction
-            
+            // 중력 방향에 의해 결정된 월드 업
+
             Vector3 worldUp = -GetGravityDirection();
-            
-            // Don't jump if we can't move up/down.
-            
-            if (characterMovement.isConstrainedToPlane && 
+
+            // 위/아래로 움직일 수 없는 경우 점프하지 않음.
+
+            if (characterMovement.isConstrainedToPlane &&
                 Mathf.Approximately(Vector3.Dot(characterMovement.GetPlaneConstraintNormal(), worldUp), 1.0f))
             {
                 return false;
             }
-            
-            // Apply jump impulse along world up defined by gravity direction
-            
+
+            // 중력 방향에 의해 정의된 월드 업을 따라 점프 임펄스를 적용
+
             float verticalSpeed = Mathf.Max(Vector3.Dot(characterMovement.velocity, worldUp), jumpImpulse);
 
             characterMovement.velocity =
                 Vector3.ProjectOnPlane(characterMovement.velocity, worldUp) + worldUp * verticalSpeed;
-            
+
             return true;
         }
-        
+
         /// <summary>
-        /// Check jump input and attempts to perform the requested jump.
+        /// 점프 입력을 확인하고 요청된 점프를 수행하려고 시도합니다.
         /// </summary>
-        
+
         protected virtual void CheckJumpInput()
         {
             if (!jumpInputPressed)
                 return;
-            
-            // If this is the first jump and we're already falling, then increment the JumpCount to compensate,
-            // ONLY if missed post grounded time tolerance
+
+            // 첫 점프이고 이미 낙하 중인 경우, 점프MaxPostGroundedTime 유예 시간을 초과한 경우에만 jumpCurrentCount를 증가시킵니다.
 
             if (jumpCurrentCount == 0 && IsFalling() && fallingTime > jumpMaxPostGroundedTime)
                 jumpCurrentCount++;
@@ -2746,32 +2741,32 @@ namespace ECM2
             bool didJump = CanJump() && DoJump();
             if (didJump)
             {
-                // Transition from not (actively) jumping to jumping
-                    
+                // 점프 중이 아닌 상태에서 점프 중으로 전환
+
                 if (!_isJumping)
                 {
                     jumpCurrentCount++;
                     jumpForceTimeRemaining = jumpMaxHoldTime;
-                    
+
                     characterMovement.PauseGroundConstraint();
                     SetMovementMode(MovementMode.Falling);
-                    
+
                     OnJumped();
                 }
             }
 
             _isJumping = didJump;
         }
-        
+
         /// <summary>
-        /// Update jump related timers
+        /// 점프 관련 타이머를 업데이트합니다
         /// </summary>
-        
+
         protected virtual void UpdateJumpTimers(float deltaTime)
         {
             if (jumpInputPressed)
                 jumpInputHoldTime += deltaTime;
-            
+
             if (jumpForceTimeRemaining > 0.0f)
             {
                 jumpForceTimeRemaining -= deltaTime;
@@ -2779,11 +2774,11 @@ namespace ECM2
                     ResetJumpState();
             }
         }
-        
+
         /// <summary>
-        /// If notifyJumpApex is true, track vertical velocity change to trigger ReachedJumpApex event.
+        /// notifyJumpApex가 true인 경우, 수직 속도 변화를 추적하여 ReachedJumpApex 이벤트를 트리거합니다.
         /// </summary>
-        
+
         protected virtual void NotifyJumpApex()
         {
             if (!notifyJumpApex)
@@ -2796,10 +2791,10 @@ namespace ECM2
             notifyJumpApex = false;
             OnReachedJumpApex();
         }
-        
+
         /// <summary>
-        /// Determines the Character's movement when 'flying'. Affected by the current physics volume's friction (if any).
-        /// Ground-Unconstrained movement with full desiredVelocity (lateral AND vertical) and gravity-less.
+        /// 현재 물리 볼륨의 마찰 영향을 받는 '비행' 중 캐릭터의 이동을 결정합니다 (있는 경우).
+        /// 중력 없는 이동과 함께 지면 제약이 없는 이동입니다.
         /// </summary>
 
         protected virtual void FlyingMovementMode(float deltaTime)
@@ -2810,14 +2805,14 @@ namespace ECM2
             {
                 float actualFriction = IsInWaterPhysicsVolume() ? physicsVolume.friction : flyingFriction;
 
-                characterMovement.velocity 
+                characterMovement.velocity
                     = CalcVelocity(characterMovement.velocity, GetDesiredVelocity(), actualFriction, true, deltaTime);
             }
         }
-        
+
         /// <summary>
-        /// How deep in water the character is immersed.
-        /// Returns a float in range 0.0 = not in water, 1.0 = fully immersed.
+        /// 캐릭터가 물에 얼마나 잠겨 있는지를 계산합니다.
+        /// 0.0 = 물에 없음, 1.0 = 완전히 잠긴 범위의 float를 반환합니다.
         /// </summary>
 
         public virtual float CalcImmersionDepth()
@@ -2832,7 +2827,7 @@ namespace ECM2
                 else
                 {
                     Vector3 worldUp = -GetGravityDirection();
-                    
+
                     Vector3 rayOrigin = GetPosition() + worldUp * height;
                     Vector3 rayDirection = -worldUp;
 
@@ -2842,62 +2837,62 @@ namespace ECM2
                         : 1.0f - Mathf.InverseLerp(0.0f, height, hitInfo.distance);
                 }
             }
-            
+
             return depth;
         }
-        
+
         /// <summary>
-        /// Determines the Character's movement when Swimming through a fluid volume, under the effects of gravity and buoyancy.
-        /// Ground-Unconstrained movement with full desiredVelocity (lateral AND vertical) applies gravity but scaled by (1.0f - buoyancy).
+        /// 중력과 부력의 영향을 받으며 유체 볼륨을 통해 수영하는 동안 캐릭터의 이동을 결정합니다.
+        /// 중력 없는 이동과 함께 지면 제약이 없는 이동입니다.
         /// </summary>
 
         protected virtual void SwimmingMovementMode(float deltaTime)
         {
-            // Compute actual buoyancy factoring current immersion depth
-            
+            // 현재 침수 깊이를 고려한 실제 부력 계산
+
             float depth = CalcImmersionDepth();
             float actualBuoyancy = buoyancy * depth;
-            
-            // Calculate new velocity
+
+            // 새로운 속도 계산
 
             Vector3 desiredVelocity = GetDesiredVelocity();
             Vector3 newVelocity = characterMovement.velocity;
-            
+
             Vector3 worldUp = -GetGravityDirection();
             float verticalSpeed = Vector3.Dot(newVelocity, worldUp);
-            
+
             if (verticalSpeed > maxSwimSpeed * 0.33f && actualBuoyancy > 0.0f)
             {
-                // Damp positive vertical speed (out of water)
+                // 양의 수직 속도를 감쇠 (물 밖으로 나감)
 
                 verticalSpeed = Mathf.Max(maxSwimSpeed * 0.33f, verticalSpeed * depth * depth);
                 newVelocity = Vector3.ProjectOnPlane(newVelocity, worldUp) + worldUp * verticalSpeed;
             }
             else if (depth < 0.65f)
             {
-                // Damp positive vertical desired speed
+                // 양의 수직 원하는 속도를 감쇠
 
                 float verticalDesiredSpeed = Vector3.Dot(desiredVelocity, worldUp);
-                
+
                 desiredVelocity =
                     Vector3.ProjectOnPlane(desiredVelocity, worldUp) + worldUp * Mathf.Min(0.1f, verticalDesiredSpeed);
             }
-            
-            // Using root motion...
+
+            // 루트 모션을 사용하는 경우...
 
             if (useRootMotion && rootMotionController)
             {
-                // Preserve current vertical velocity as we want to keep the effect of gravity
+                // 현재 수직 속도를 유지하여 중력의 영향을 유지합니다
 
                 Vector3 verticalVelocity = Vector3.Project(newVelocity, worldUp);
 
-                // Updates new velocity
+                // 새로운 속도 업데이트
 
                 newVelocity = Vector3.ProjectOnPlane(desiredVelocity, worldUp) + verticalVelocity;
             }
             else
             {
-                // Actual friction
+                // 실제 마찰
 
                 float actualFriction = IsInWaterPhysicsVolume()
                     ? physicsVolume.friction * depth
@@ -2906,29 +2901,29 @@ namespace ECM2
                 newVelocity = CalcVelocity(newVelocity, desiredVelocity, actualFriction, true, deltaTime);
             }
 
-            // If swimming freely, apply gravity acceleration scaled by (1.0f - actualBuoyancy)
+            // 자유롭게 수영하는 경우, 중력 가속도를 적용하지만 (1.0f - 실제 부력)으로 스케일링합니다
 
             newVelocity += gravity * ((1.0f - actualBuoyancy) * deltaTime);
 
-            // Update velocity
+            // 속도 업데이트
 
             characterMovement.velocity = newVelocity;
         }
-        
+
         /// <summary>
-        /// User-defined custom movement mode, including many possible sub-modes.
-        /// Called if MovementMode is set to Custom.
+        /// 사용자 정의 이동 모드, 여러 하위 모드를 포함할 수 있습니다.
+        /// MovementMode가 Custom으로 설정된 경우 호출됩니다.
         /// </summary>
 
         protected virtual void CustomMovementMode(float deltaTime)
         {
-            // Trigger CustomMovementModeUpdate event
-            
+            // CustomMovementModeUpdate 이벤트 트리거
+
             OnCustomMovementMode(deltaTime);
         }
-        
+
         /// <summary>
-        /// Returns the Character's current rotation mode.
+        /// 캐릭터의 현재 회전 모드를 반환합니다.
         /// </summary>
 
         public RotationMode GetRotationMode()
@@ -2937,53 +2932,53 @@ namespace ECM2
         }
 
         /// <summary>
-        /// Sets the Character's current rotation mode:
-        ///     -None:                          Disable rotation.
-        ///     -OrientRotationToMovement:      Rotate the Character toward the direction of acceleration, using rotationRate as the rate of rotation change.
-        ///     -OrientRotationToViewDirection: Smoothly rotate the Character toward camera's view direction, using rotationRate as the rate of rotation change.
-        ///     -OrientWithRootMotion:          Let root motion handle Character rotation.
-        ///     -Custom:                        User-defined custom rotation mode.
+        /// 캐릭터의 현재 회전 모드를 설정합니다:
+        /// -None: 회전 비활성화.
+        /// -OrientRotationToMovement: 이동 방향으로 캐릭터를 회전시키며, rotationRate를 회전 변화 속도로 사용합니다.
+        /// -OrientRotationToViewDirection: 카메라의 시선 방향으로 캐릭터를 부드럽게 회전시키며, rotationRate를 회전 변화 속도로 사용합니다.
+        /// -OrientWithRootMotion: 루트 모션이 캐릭터 회전을 처리하도록 합니다.
+        /// -Custom: 사용자 정의 회전 모드.
         /// </summary>
 
         public void SetRotationMode(RotationMode rotationMode)
         {
             _rotationMode = rotationMode;
         }
-        
+
         /// <summary>
-        /// Updates the Character's rotation based on its current RotationMode.
+        /// 현재 RotationMode를 기반으로 캐릭터의 회전을 업데이트합니다.
         /// </summary>
 
         protected virtual void UpdateRotation(float deltaTime)
         {
             if (_rotationMode == RotationMode.None)
             {
-                // Do nothing
+                // 아무것도 하지 않음
             }
             else if (_rotationMode == RotationMode.OrientRotationToMovement)
             {
-                // Determines if rotation should modify character's yaw only
-            
+                // 회전이 캐릭터의 요(yaw)만 수정해야 하는지 확인
+
                 bool shouldRemainVertical = IsWalking() || IsFalling();
-                
-                // Smoothly rotate the Character toward the movement direction, using rotationRate as the rate of rotation change
-                
+
+                // 회전 변화를 회전 속도로 사용하여 이동 방향으로 캐릭터를 부드럽게 회전
+
                 RotateTowards(_movementDirection, deltaTime, shouldRemainVertical);
             }
             else if (_rotationMode == RotationMode.OrientRotationToViewDirection && camera != null)
             {
-                // Determines if rotation should modify character's yaw only
-            
+                // 회전이 캐릭터의 요(yaw)만 수정해야 하는지 확인
+
                 bool shouldRemainVertical = IsWalking() || IsFalling();
-                
-                // Smoothly rotate the Character toward camera's view direction, using rotationRate as the rate of rotation change
-                
+
+                // 회전 변화를 회전 속도로 사용하여 카메라의 시선 방향으로 캐릭터를 부드럽게 회전
+
                 RotateTowards(cameraTransform.forward, deltaTime, shouldRemainVertical);
             }
             else if (_rotationMode == RotationMode.OrientWithRootMotion)
             {
-                // Let root motion handle Character rotation
-                
+                // 루트 모션이 캐릭터 회전을 처리하도록 함
+
                 RotateWithRootMotion();
             }
             else if (_rotationMode == RotationMode.Custom)
@@ -2991,55 +2986,55 @@ namespace ECM2
                 CustomRotationMode(deltaTime);
             }
         }
-        
+
         /// <summary>
-        /// User-defined custom rotation mode.
-        /// Called if RotationMode is set to Custom.
+        /// 사용자 정의 회전 모드.
+        /// RotationMode가 Custom으로 설정된 경우 호출됩니다.
         /// </summary>
-        
+
         protected virtual void CustomRotationMode(float deltaTime)
         {
-            // Trigger CustomRotationModeUpdated event
-            
+            // CustomRotationModeUpdated 이벤트 트리거
+
             OnCustomRotationMode(deltaTime);
         }
-        
+
         private void BeforeSimulationUpdate(float deltaTime)
         {
-            // Toggle walking / falling mode based on CharacterMovement ground status
-            
+            // 캐릭터 이동 모드를 CharacterMovement 지면 상태에 기반하여 걷기 / 낙하 모드로 전환
+
             if (IsWalking() && !IsGrounded())
                 SetMovementMode(MovementMode.Falling);
-            
+
             if (IsFalling() && IsGrounded())
                 SetMovementMode(MovementMode.Walking);
-            
-            // Update active physics volume
-            
+
+            // 활성 물리 볼륨 업데이트
+
             UpdatePhysicsVolumes();
-            
-            // Handle crouch / un-crouch
+
+            // 웅크리기 / 웅크리지 않기 처리
 
             CheckCrouchInput();
-            
-            // Handle jump
-            
+
+            // 점프 처리
+
             CheckJumpInput();
             UpdateJumpTimers(deltaTime);
-            
-            // Trigger BeforeSimulationUpdated event
-            
+
+            // BeforeSimulationUpdated 이벤트 트리거
+
             OnBeforeSimulationUpdate(deltaTime);
         }
 
         private void SimulationUpdate(float deltaTime)
         {
-            // Calculate desired velocity for current movement mode
+            // 현재 이동 모드에 대한 원하는 속도 계산
 
             CalcDesiredVelocity(deltaTime);
-            
-            // Update current movement mode
-            
+
+            // 현재 이동 모드 업데이트
+
             switch (_movementMode)
             {
                 case MovementMode.None:
@@ -3065,107 +3060,107 @@ namespace ECM2
                     CustomMovementMode(deltaTime);
                     break;
             }
-            
-            // Update rotation
+
+            // 회전 업데이트
 
             UpdateRotation(deltaTime);
-            
-            // Append input rotation (eg: AddYawInput, etc)
+
+            // 입력 회전 추가 (예: AddYawInput 등)
 
             ConsumeRotationInput();
         }
-        
+
         private void AfterSimulationUpdate(float deltaTime)
         {
-            // If requested, check apex reached and trigger corresponding event
-            
+            // 요청된 경우, 정점 도달을 확인하고 해당 이벤트 트리거
+
             NotifyJumpApex();
-            
-            // Trigger AfterSimulationUpdated event
-            
+
+            // AfterSimulationUpdated 이벤트 트리거
+
             OnAfterSimulationUpdate(deltaTime);
         }
 
         private void CharacterMovementUpdate(float deltaTime)
         {
-            // Perform movement
-            
+            // 이동 수행
+
             characterMovement.Move(deltaTime);
-            
-            // Trigger CharacterMovementUpdated event
-            
+
+            // CharacterMovementUpdated 이벤트 트리거
+
             OnCharacterMovementUpdated(deltaTime);
-            
-            // If not using root motion, flush root motion accumulated deltas.
-            // This prevents accumulation while character is toggling root motion.
+
+            // 루트 모션을 사용하지 않는 경우, 루트 모션 누적 델타를 플러시합니다.
+            // 캐릭터가 루트 모션을 토글하는 동안 누적을 방지합니다.
 
             if (!useRootMotion && rootMotionController)
                 rootMotionController.FlushAccumulatedDeltas();
         }
-        
+
         /// <summary>
-        /// Perform this character simulation, ie: update velocity, position, rotation, etc.
-        /// Automatically called when enableAutoSimulation is true.
+        /// 이 캐릭터 시뮬레이션을 수행합니다, 즉: 속도, 위치, 회전 등을 업데이트합니다.
+        /// enableAutoSimulation이 true일 때 자동으로 호출됩니다.
         /// </summary>
-        
+
         public void Simulate(float deltaTime)
         {
             if (isPaused)
                 return;
-            
+
             BeforeSimulationUpdate(deltaTime);
             SimulationUpdate(deltaTime);
             AfterSimulationUpdate(deltaTime);
             CharacterMovementUpdate(deltaTime);
         }
-        
+
         /// <summary>
-        /// If enableAutoSimulation is true, perform this character simulation.
+        /// enableAutoSimulation이 true인 경우, 이 캐릭터 시뮬레이션을 수행합니다.
         /// </summary>
-        
+
         private void OnLateFixedUpdate()
         {
-            // Simulate this character
-            
+            // 이 캐릭터 시뮬레이션 수행
+
             Simulate(Time.deltaTime);
         }
-        
+
         /// <summary>
-        /// Is the Character currently paused?
+        /// 캐릭터가 현재 일시 중지 상태인지 여부를 확인합니다.
         /// </summary>
 
         public bool IsPaused()
         {
             return isPaused;
         }
-        
+
         /// <summary>
-        /// Pause / Resume Character.
-        /// When paused, a character prevents any interaction (no movement, no rotation, no collisions, etc.)
-        ///  If clearState is true, will clear any pending movement, forces and rotations.
+        /// 캐릭터 일시 중지 / 재개.
+        /// 일시 중지되면 캐릭터는 모든 상호 작용을 방지합니다 (이동 없음, 회전 없음, 충돌 없음 등).
+        /// clearState가 true인 경우, 모든 보류 중인 이동, 힘 및 회전을 지웁니다.
         /// </summary>
-        
+
         public void Pause(bool pause, bool clearState = true)
         {
             isPaused = pause;
             characterMovement.collider.enabled = !isPaused;
-            
+
             if (clearState)
             {
                 _movementDirection = Vector3.zero;
                 _rotationInput = Vector3.zero;
-                
+
                 characterMovement.velocity = Vector3.zero;
                 characterMovement.ClearAccumulatedForces();
             }
         }
-        
+
         #endregion
 
         #region MONOBEHAVIOUR
-        
+
         /// <summary>
-        /// If overriden, base method MUST be called.
+        /// 재정의된 경우, 기본 메서드를 반드시 호출해야 합니다.
         /// </summary>
 
         protected virtual void Reset()
@@ -3180,7 +3175,7 @@ namespace ECM2
             _maxAcceleration = 20.0f;
             _brakingDecelerationWalking = 20.0f;
             _groundFriction = 8.0f;
-            
+
             _canEverCrouch = true;
             _crouchedHeight = 1.25f;
             _unCrouchedHeight = 2.0f;
@@ -3190,7 +3185,7 @@ namespace ECM2
             _brakingDecelerationFalling = 0.0f;
             _fallingLateralFriction = 0.3f;
             _airControl = 0.3f;
-            
+
             _canEverJump = true;
             _canJumpWhileCrouching = true;
             _jumpMaxCount = 1;
@@ -3210,9 +3205,9 @@ namespace ECM2
 
             _gravity = new Vector3(0.0f, -9.81f, 0.0f);
             _gravityScale = 1.0f;
-            
+
             _useRootMotion = false;
-            
+
             _impartPlatformVelocity = false;
             _impartPlatformMovement = false;
             _impartPlatformRotation = false;
@@ -3220,26 +3215,26 @@ namespace ECM2
             _enablePhysicsInteraction = false;
             _applyPushForceToCharacters = false;
             _applyStandingDownwardForce = false;
-            
+
             _mass = 1.0f;
             _pushForceScale = 1.0f;
             _standingDownwardForceScale = 1.0f;
         }
-        
+
         /// <summary>
-        /// If overriden, base method MUST be called.
+        /// 재정의된 경우, 기본 메서드를 반드시 호출해야 합니다.
         /// </summary>
 
         protected virtual void OnValidate()
         {
             rotationRate = _rotationRate;
-            
+
             maxWalkSpeed = _maxWalkSpeed;
             minAnalogWalkSpeed = _minAnalogWalkSpeed;
             maxAcceleration = _maxAcceleration;
             brakingDecelerationWalking = _brakingDecelerationWalking;
             groundFriction = _groundFriction;
-            
+
             crouchedHeight = _crouchedHeight;
             unCrouchedHeight = _unCrouchedHeight;
             maxWalkSpeedCrouched = _maxWalkSpeedCrouched;
@@ -3248,7 +3243,7 @@ namespace ECM2
             brakingDecelerationFalling = _brakingDecelerationFalling;
             fallingLateralFriction = _fallingLateralFriction;
             airControl = _airControl;
-            
+
             jumpMaxCount = _jumpMaxCount;
             jumpImpulse = _jumpImpulse;
             jumpMaxHoldTime = _jumpMaxHoldTime;
@@ -3265,12 +3260,12 @@ namespace ECM2
             buoyancy = _buoyancy;
 
             gravityScale = _gravityScale;
-            
+
             useRootMotion = _useRootMotion;
 
             if (_characterMovement == null)
                 _characterMovement = GetComponent<CharacterMovement>();
-            
+
             impartPlatformVelocity = _impartPlatformVelocity;
             impartPlatformMovement = _impartPlatformMovement;
             impartPlatformRotation = _impartPlatformRotation;
@@ -3278,98 +3273,98 @@ namespace ECM2
             enablePhysicsInteraction = _enablePhysicsInteraction;
             applyPushForceToCharacters = _applyPushForceToCharacters;
             applyPushForceToCharacters = _applyPushForceToCharacters;
-            
+
             mass = _mass;
             pushForceScale = _pushForceScale;
             standingDownwardForceScale = _standingDownwardForceScale;
         }
-        
+
         /// <summary>
-        /// If overriden, base method MUST be called.
+        /// 재정의된 경우, 기본 메서드를 반드시 호출해야 합니다.
         /// </summary>
 
         protected virtual void Awake()
         {
-            // Cache components
+            // 구성 요소 캐시
 
             CacheComponents();
-            
-            // Set starting movement mode
+
+            // 시작 이동 모드 설정
 
             SetMovementMode(_startingMovementMode);
         }
-        
+
         /// <summary>
-        /// If overriden, base method MUST be called.
+        /// 재정의된 경우, 기본 메서드를 반드시 호출해야 합니다.
         /// </summary>
 
         protected virtual void OnEnable()
         {
-            // Subscribe to CharacterMovement events
+            // CharacterMovement 이벤트 구독
 
             characterMovement.Collided += OnCollided;
             characterMovement.FoundGround += OnFoundGround;
-            
-            // If enabled, start LateFixedUpdate coroutine to perform auto simulation
+
+            // 활성화된 경우, 자동 시뮬레이션을 수행하기 위해 LateFixedUpdate 코루틴 시작
 
             if (_enableAutoSimulation)
                 EnableAutoSimulationCoroutine(true);
         }
-        
+
         /// <summary>
-        /// If overriden, base method MUST be called.
+        /// 재정의된 경우, 기본 메서드를 반드시 호출해야 합니다.
         /// </summary>
 
         protected virtual void OnDisable()
         {
-            // Unsubscribe from CharacterMovement events
-            
+            // CharacterMovement 이벤트 구독 해제
+
             characterMovement.Collided -= OnCollided;
             characterMovement.FoundGround -= OnFoundGround;
-            
-            // If enabled, stops LateFixedUpdate coroutine to disable auto simulation
+
+            // 활성화된 경우, 자동 시뮬레이션을 비활성화하기 위해 LateFixedUpdate 코루틴 중지
 
             if (_enableAutoSimulation)
                 EnableAutoSimulationCoroutine(false);
         }
-        
+
         /// <summary>
-        /// If overriden, base method MUST be called.
+        /// 재정의된 경우, 기본 메서드를 반드시 호출해야 합니다.
         /// </summary>
 
         protected virtual void Start()
         {
-            // Force a ground check to update CM ground state,
-            // Otherwise character will change to falling, due characterMovement updating its ground state until next Move call.
-            
+            // 지면 상태를 업데이트하기 위해 지면 검사를 강제합니다,
+            // 그렇지 않으면 캐릭터가 낙하 상태로 변경됩니다, 캐릭터 이동이 다음 Move 호출까지 지면 상태를 업데이트하지 않기 때문입니다.
+
             if (_startingMovementMode == MovementMode.Walking)
             {
                 characterMovement.SetPosition(transform.position, true);
             }
         }
-        
+
         /// <summary>
-        /// If overriden, base method MUST be called.
+        /// 재정의된 경우, 기본 메서드를 반드시 호출해야 합니다.
         /// </summary>
 
         protected virtual void OnTriggerEnter(Collider other)
         {
             AddPhysicsVolume(other);
         }
-        
+
         /// <summary>
-        /// If overriden, base method MUST be called.
+        /// 재정의된 경우, 기본 메서드를 반드시 호출해야 합니다.
         /// </summary>
 
         protected virtual void OnTriggerExit(Collider other)
         {
             RemovePhysicsVolume(other);
         }
-        
+
         /// <summary>
-        /// If enableAutoSimulation is true, this coroutine is used to perform character simulation.
+        /// enableAutoSimulation이 true인 경우, 이 코루틴은 캐릭터 시뮬레이션을 수행하는 데 사용됩니다.
         /// </summary>
-        
+
         private IEnumerator LateFixedUpdate()
         {
             WaitForFixedUpdate waitTime = new WaitForFixedUpdate();
@@ -3381,7 +3376,7 @@ namespace ECM2
                 OnLateFixedUpdate();
             }
         }
-        
+
         #endregion
     }
 }
